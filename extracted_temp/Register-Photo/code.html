@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder - Register Photos</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "1.5rem", 
+                        "xl": "2rem", 
+                        "2xl": "2.5rem",
+                        "full": "9999px"
+                    },
+                    backgroundImage: {
+                        'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1))',
+                        'glass-gradient-dark': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Utilities for Glassmorphism */
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .dark .glass-panel {
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:active {
+            transform: scale(0.98);
+        }
+
+        .glass-btn {
+            background: rgba(19, 55, 236, 0.9);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 15px rgba(19, 55, 236, 0.3);
+        }
+
+        /* Smooth gradient animation background */
+        .ambient-light {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300 min-h-screen flex flex-col antialiased selection:bg-primary/20">
+<!-- Ambient Background Elements -->
+<div class="ambient-light">
+<div class="blob bg-primary/20 w-96 h-96 -top-20 -left-20 dark:opacity-20"></div>
+<div class="blob bg-purple-400/20 w-80 h-80 top-40 -right-20 dark:opacity-10"></div>
+</div>
+<!-- Navigation Header -->
+<header class="relative z-10 px-6 pt-6 pb-2">
+<div class="flex items-center justify-between mb-6">
+<button class="flex items-center justify-center w-12 h-12 rounded-full glass-panel bg-white/40 dark:bg-white/5 text-slate-800 dark:text-white hover:bg-white/60 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<div class="flex gap-2">
+<div class="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<div class="h-1.5 w-8 rounded-full bg-primary shadow-[0_0_10px_rgba(19,55,236,0.5)]"></div>
+<div class="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<div class="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</div>
+<div class="w-12 h-12"></div> <!-- Spacer for visual balance -->
+</div>
+</header>
+<!-- Main Content -->
+<main class="relative z-10 flex-1 flex flex-col px-6 overflow-y-auto pb-32 no-scrollbar">
+<!-- Headlines -->
+<div class="mb-8 text-center animate-fade-in-up">
+<h1 class="text-3xl font-bold tracking-tight mb-3 text-slate-900 dark:text-white">Show us your smile</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed max-w-xs mx-auto">
+                Add at least 2 photos to continue. Drag to reorder your main profile picture.
+            </p>
+</div>
+<!-- Photo Grid -->
+<div class="grid grid-cols-2 gap-4 w-full max-w-sm mx-auto">
+<!-- Photo 1 (Main) -->
+<div class="relative group aspect-[4/5]">
+<div class="absolute inset-0 rounded-2xl overflow-hidden glass-card border border-white/40 dark:border-white/10">
+<img alt="Young woman smiling in a casual outdoor setting" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR74PMd1aH0oqTiNpxo4hc66KUqrVXWJUyB2I34ve34_hRTSmqbGWeaxmiZxy12kvn1lxsBfbvzVPl6Khs4T-jHwvNkeqpez1Cn8D2HtYaiUOVv8LSOM-jQec0FetXZEX23Ocdw0znO-KEhUh9ek5mL5V2V_Lj3kcWu-xTOgvZ2cyT9IPQ51dlTi3y7ZerxUygE2CU3jwQnIkrMykEh8rFluZAd4gEfa6ZHEAeG8YiMUjfr9vcdB4QdxDYETnHoLswH-k4ZNmhe_wA"/>
+<!-- Main Badge -->
+<div class="absolute bottom-3 left-3 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+<span class="text-[10px] font-bold text-white uppercase tracking-wide">Main</span>
+</div>
+<!-- Delete Button -->
+<button class="absolute top-2 right-2 p-1.5 rounded-full bg-black/30 backdrop-blur-md text-white hover:bg-red-500/80 transition-colors border border-white/20">
+<span class="material-symbols-outlined text-[16px] block">close</span>
+</button>
+</div>
+</div>
+<!-- Photo 2 (Filled) -->
+<div class="relative group aspect-[4/5]">
+<div class="absolute inset-0 rounded-2xl overflow-hidden glass-card border border-white/40 dark:border-white/10">
+<img alt="Two friends laughing together at a cafe" class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQ1Uq4-SPLqxuM2-qANTs06jQ4tEy-f6KiagjMT8kieVm-2D0FbwRhQo7LOE4346p9lgO4-l2ddIa6juXK3UfSPYafceKWr6Y5wARk1MGafTWDtBQkbPR0_HzxrKJoaMIIfk0V3w8wkz_so3f9s2lYHEYKZorJv9napGpGZtllLULSaPXJZKYHhCh9pjbmA5_fK0Mb-krMTJx12oR-3DnE9TR1S18V666jRC2Shl8vddqZ4QYIF5UEkZp1ScOZGCdCcnajZMqbphSV"/>
+<!-- Delete Button -->
+<button class="absolute top-2 right-2 p-1.5 rounded-full bg-black/30 backdrop-blur-md text-white hover:bg-red-500/80 transition-colors border border-white/20">
+<span class="material-symbols-outlined text-[16px] block">close</span>
+</button>
+</div>
+</div>
+<!-- Photo 3 (Empty) -->
+<button class="relative aspect-[4/5] rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-all group flex flex-col items-center justify-center gap-2 overflow-hidden">
+<div class="w-12 h-12 rounded-full bg-white/60 dark:bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary dark:text-indigo-400">add</span>
+</div>
+</button>
+<!-- Photo 4 (Empty) -->
+<button class="relative aspect-[4/5] rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-all group flex flex-col items-center justify-center gap-2 overflow-hidden">
+<div class="w-12 h-12 rounded-full bg-white/60 dark:bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">add</span>
+</div>
+</button>
+<!-- Photo 5 (Empty) -->
+<button class="relative aspect-[4/5] rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-all group flex flex-col items-center justify-center gap-2 overflow-hidden">
+<div class="w-12 h-12 rounded-full bg-white/60 dark:bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">add</span>
+</div>
+</button>
+<!-- Photo 6 (Empty) -->
+<button class="relative aspect-[4/5] rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-all group flex flex-col items-center justify-center gap-2 overflow-hidden">
+<div class="w-12 h-12 rounded-full bg-white/60 dark:bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">add</span>
+</div>
+</button>
+</div>
+</main>
+<!-- Footer Actions -->
+<footer class="fixed bottom-0 w-full z-20 px-6 pb-8 pt-12 bg-gradient-to-t from-background-light via-background-light/90 to-transparent dark:from-background-dark dark:via-background-dark/90 pointer-events-none">
+<div class="max-w-md mx-auto pointer-events-auto flex flex-col gap-4">
+<!-- Trust Badge -->
+<div class="flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[16px] text-primary/70">verified_user</span>
+<span class="text-xs font-medium">Photos are secure &amp; verified for safety</span>
+</div>
+<!-- Primary Action -->
+<button class="w-full glass-btn text-white font-semibold h-14 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span>Continue</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</footer>
+</body></html>

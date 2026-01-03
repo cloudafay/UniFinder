@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder - Filters</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "2xl": "2.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
+                        "glow": "0 0 15px rgba(19, 55, 236, 0.5)",
+                        "glow-sm": "0 0 8px rgba(19, 55, 236, 0.4)",
+                    },
+                    backdropBlur: {
+                        "xs": "2px",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .dark .glass-panel {
+            background: rgba(16, 19, 34, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-element {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .dark .glass-element {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-100 font-display text-slate-900 antialiased selection:bg-primary selection:text-white overflow-hidden">
+<!-- Mobile Container -->
+<div class="relative mx-auto h-screen w-full max-w-md overflow-hidden bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- BACKGROUND CONTENT LAYER (Mocking the 'Discover' feed underneath) -->
+<div class="absolute inset-0 z-0 overflow-y-auto pb-24 pt-14 px-4 space-y-4 opacity-100 transition-opacity duration-300">
+<!-- Header for Background -->
+<div class="flex items-center justify-between mb-6">
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Discover</h1>
+<div class="h-10 w-10 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
+<img class="h-full w-full object-cover" data-alt="User profile thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHhleePAIuu2aYMPPzBzf5BcAmyl7InFBWVz-9i7yZ0KjAITv_QZDiYjKrOy84vGronDmKq5dDKozfmycnah0TztTmEEXI2xDYXNSD2RQYT_Zpt-LGqJr7zTz8INLPRHYmvZ2g2gJvnSumnbxsdJ3jX67dcneKx8bybPk7jhAOnRNJTGa6s2JqGAxOv1yO-czapzLl27dQ8ZUtW503ceSbgRg3sa--qF_l-cLebSGuUoe_kLFgYR4GOVslKx2hdZkxDa_PbQl3N9wX"/>
+</div>
+</div>
+<!-- Mock Cards Grid -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Card 1 -->
+<div class="aspect-[3/4] rounded-2xl bg-white overflow-hidden relative shadow-md group">
+<img class="h-full w-full object-cover" data-alt="University student smiling outdoors with backpack" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJWO32IVfOqvWYz7Ht7Y9s1-PhGH1vLLDIfHPhQy0Ku7jO8fErLLPAFLTJaJzbLkTf2H38wSZwj9g08MLFm2kA7GYGkV8bF6ARWLhdhFHFIfdRimAkWwyE75UJSd289UiVGdHxFpFs3HetWIo4d89s4Gj-oHvtdQQ5_lwWk__ZV_4f9uRbHd2A2b0LopB5-KN2Ymm4TcCx4ZmYxv3s5D3G9It2s_7iJAbrIMlYL5EOjqWmRbD2ubJTSICzE61-2zpUUvkJz12rf8Lu"/>
+<div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-3 pt-10">
+<p class="text-white font-semibold text-sm">Sarah, 20</p>
+<p class="text-white/80 text-xs">Computer Science</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="aspect-[3/4] rounded-2xl bg-white overflow-hidden relative shadow-md group">
+<img class="h-full w-full object-cover" data-alt="Male student walking on campus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2bpG1TzMSiRDkGCvBiIC0C7OwODrvhp67VH80Ty1cUvH_fQ_jiH3tsDOwHXlWmNcbLW4WoN8puD5Bb9kwvBpng8xbX15rWjxR37Ps-WV7V_-x2VNsXvrg4JJK_pOt_zRT-sVODOlpihcHDeMZna8ZfY6ouFzevRvzfEFAP0hwAbYegzMfr26p-UOrSxKhhwvdGLzoy0qRQu1iaSJclNYyRpgdUwAWRkZTHfvJ3vgIF3aQ1MULLA9kUn79zWac1aSrrvmETx7nkCE-"/>
+<div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-3 pt-10">
+<p class="text-white font-semibold text-sm">James, 22</p>
+<p class="text-white/80 text-xs">Engineering</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="aspect-[3/4] rounded-2xl bg-white overflow-hidden relative shadow-md group">
+<img class="h-full w-full object-cover" data-alt="Female student holding books in library" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmeht7_5y-HjhO1T15OZzuh3jl26Ff1sBEtHcwJL3E9QFF3hpWc1m_kaxeHckNhZImVnhYWVr5Hr6DOAcXEDuoekOfzQoNZcz7c2-2y12D4M-iYk5QqGwfIz5_MEDd00tJzbvVs7dbJQcgeM1JYMhs0tq1_yk2-vHlkQssSDAne5SSWMu6T_ez8OPVxnQRiupgymamLpLH9ImSF_hGbqxFUxRej3xWmLhDe06WQCpFMM5ZxY5o8Zs8FJzs6s7KWJYkKiFqYEbNTRZe"/>
+<div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-3 pt-10">
+<p class="text-white font-semibold text-sm">Mia, 19</p>
+<p class="text-white/80 text-xs">Psychology</p>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="aspect-[3/4] rounded-2xl bg-white overflow-hidden relative shadow-md group">
+<img class="h-full w-full object-cover" data-alt="Student sitting on grass reading" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDt4bVrKMwa-3KOkPlrM4AVCOJhCAql9F2M4EEBeJzahXmNnGsVjicPdUzMWLo2X4G5PPUCoIaHybcSAtyclBZ3CPaNjOFr5xnsOZKAxmkPRE7LET_DlPdQdPNOtiFKSniNo1-se2Qd2EmByoL12iTX9INBMrr-feDgm4WKALo4TssnAy-9CZIrCo12vH-dR5ydn36p5jfcLfmpgCFlnKNAqSKgfDhDcnQZuixvURToqyqtgZV0LgU-v9IxjRsVZNIHkfcG1dW9Snzu"/>
+<div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-3 pt-10">
+<p class="text-white font-semibold text-sm">Alex, 21</p>
+<p class="text-white/80 text-xs">Arts</p>
+</div>
+</div>
+</div>
+</div>
+<!-- MOCK NAVIGATION BAR (Behind the glass sheet) -->
+<div class="absolute bottom-0 z-10 w-full h-20 bg-white/90 backdrop-blur-md border-t border-gray-200 flex justify-around items-center pb-4 px-2">
+<button class="flex flex-col items-center justify-center w-16 h-full text-primary">
+<span class="material-symbols-outlined text-[28px] font-variation-settings-'FILL'1">explore</span>
+<span class="text-[10px] font-medium mt-1">Discover</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-gray-400">
+<span class="material-symbols-outlined text-[28px]">chat_bubble</span>
+<span class="text-[10px] font-medium mt-1">Messages</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-gray-400">
+<span class="material-symbols-outlined text-[28px]">notifications</span>
+<span class="text-[10px] font-medium mt-1">Activity</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-gray-400">
+<span class="material-symbols-outlined text-[28px]">person</span>
+<span class="text-[10px] font-medium mt-1">Profile</span>
+</button>
+</div>
+<!-- DARK OVERLAY (Dimming the background content) -->
+<div class="absolute inset-0 z-20 bg-black/10 backdrop-blur-[2px]"></div>
+<!-- BOTTOM SHEET COMPONENT -->
+<div class="absolute bottom-0 z-30 w-full h-[88%] rounded-t-[40px] glass-panel flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transition-transform transform translate-y-0 group/design-root">
+<!-- Handle & Header -->
+<div class="flex flex-col items-center pt-3 pb-2 flex-shrink-0">
+<!-- Handle -->
+<div class="h-1.5 w-12 rounded-full bg-gray-300/80 mb-4"></div>
+<!-- Title Row -->
+<div class="w-full px-6 flex justify-between items-center">
+<h2 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Filter Students</h2>
+<button class="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                        Reset
+                    </button>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-8 no-scrollbar">
+<!-- Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-primary">
+<span class="material-symbols-outlined" style="font-size: 24px;">search</span>
+</div>
+<input class="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/60 dark:bg-slate-800/50 border border-white/40 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white/80 transition-all shadow-sm backdrop-blur-sm" placeholder="Search classmates or majors..." type="text" value=""/>
+</div>
+<!-- Looking For Section (Chips) -->
+<div class="space-y-3">
+<p class="text-slate-900 dark:text-white text-base font-semibold">Looking for</p>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6">
+<!-- Active Chip -->
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white shadow-glow border border-primary whitespace-nowrap transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">school</span>
+<span class="text-sm font-medium">Study Partner</span>
+</button>
+<!-- Inactive Chips -->
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/40 dark:bg-slate-700/40 border border-white/40 dark:border-white/10 text-slate-700 dark:text-slate-200 whitespace-nowrap backdrop-blur-md hover:bg-white/60 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span class="text-sm font-medium">Dating</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/40 dark:bg-slate-700/40 border border-white/40 dark:border-white/10 text-slate-700 dark:text-slate-200 whitespace-nowrap backdrop-blur-md hover:bg-white/60 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">diversity_3</span>
+<span class="text-sm font-medium">Friendship</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/40 dark:bg-slate-700/40 border border-white/40 dark:border-white/10 text-slate-700 dark:text-slate-200 whitespace-nowrap backdrop-blur-md hover:bg-white/60 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">sports_esports</span>
+<span class="text-sm font-medium">Gaming</span>
+</button>
+</div>
+</div>
+<!-- Age Range Slider -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<p class="text-slate-900 dark:text-white text-base font-semibold">Age Range</p>
+<p class="text-primary font-bold text-sm bg-primary/10 px-2 py-1 rounded-lg">18 - 25</p>
+</div>
+<div class="relative h-8 flex items-center select-none">
+<!-- Track Background -->
+<div class="absolute h-1.5 w-full rounded-full bg-gray-200 dark:bg-slate-700"></div>
+<!-- Active Track -->
+<div class="absolute h-1.5 rounded-full bg-primary left-[0%] right-[60%] shadow-glow-sm"></div>
+<!-- Left Thumb -->
+<div class="absolute left-[0%] h-7 w-7 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] border-2 border-primary flex items-center justify-center transform -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+</div>
+<!-- Right Thumb -->
+<div class="absolute left-[40%] h-7 w-7 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] border-2 border-primary flex items-center justify-center transform -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+</div>
+</div>
+</div>
+<!-- Distance Slider -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<p class="text-slate-900 dark:text-white text-base font-semibold">Distance</p>
+<p class="text-slate-500 dark:text-slate-400 font-medium text-sm">Within 5 miles</p>
+</div>
+<div class="relative h-8 flex items-center select-none">
+<!-- Track Background -->
+<div class="absolute h-1.5 w-full rounded-full bg-gray-200 dark:bg-slate-700"></div>
+<!-- Active Track -->
+<div class="absolute h-1.5 rounded-full bg-primary w-[25%] shadow-glow-sm"></div>
+<!-- Thumb -->
+<div class="absolute left-[25%] h-7 w-7 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] border-2 border-primary flex items-center justify-center transform -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+</div>
+</div>
+<div class="flex justify-between text-xs text-slate-400 px-1">
+<span>Campus</span>
+<span>50mi</span>
+</div>
+</div>
+<!-- Toggles Section (Translucent Pills) -->
+<div class="space-y-4">
+<p class="text-slate-900 dark:text-white text-base font-semibold">Preferences</p>
+<!-- Toggle 1 -->
+<label class="flex items-center justify-between p-4 rounded-2xl glass-element cursor-pointer group hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-blue-100 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white font-medium">Verified Students Only</span>
+<span class="text-slate-500 text-xs">Recommended for safety</span>
+</div>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200/50 peer-focus:outline-none rounded-full peer dark:bg-gray-700/50 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-checked:shadow-glow-sm"></div>
+</div>
+</label>
+<!-- Toggle 2 -->
+<label class="flex items-center justify-between p-4 rounded-2xl glass-element cursor-pointer group hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+<span class="material-symbols-outlined">circle</span>
+</div>
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white font-medium">Online Now</span>
+<span class="text-slate-500 text-xs">Show active users</span>
+</div>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200/50 peer-focus:outline-none rounded-full peer dark:bg-gray-700/50 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-checked:shadow-glow-sm"></div>
+</div>
+</label>
+</div>
+<!-- Spacing for bottom button -->
+<div class="h-20"></div>
+</div>
+<!-- Fixed Floating Action Button -->
+<div class="absolute bottom-8 left-0 w-full px-6 pointer-events-none">
+<button class="pointer-events-auto w-full py-4 rounded-full bg-primary text-white font-semibold text-lg shadow-glow hover:shadow-[0_0_25px_rgba(19,55,236,0.6)] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    Apply Filters
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

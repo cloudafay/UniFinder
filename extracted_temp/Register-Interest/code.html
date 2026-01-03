@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder - Interests</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                    boxShadow: {
+                        "glass": "0 4px 30px rgba(0, 0, 0, 0.05)",
+                        "glow": "0 0 20px rgba(19, 55, 236, 0.4)",
+                        "glow-sm": "0 0 10px rgba(19, 55, 236, 0.25)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .dark .glass-panel {
+            background: rgba(30, 35, 50, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-active {
+            background: rgba(19, 55, 236, 1) !important;
+            border-color: rgba(19, 55, 236, 1) !important;
+        }
+
+        /* Hide scrollbar for sleek look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Smooth animation for chips */
+        .chip-anim {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .chip-anim:active {
+            transform: scale(0.95);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d101b] dark:text-white transition-colors duration-300">
+<!-- Mobile Container -->
+<div class="relative mx-auto flex h-screen max-h-screen w-full max-w-md flex-col overflow-hidden bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- Ambient Background Gradients -->
+<div class="pointer-events-none absolute -left-20 -top-20 h-[400px] w-[400px] rounded-full bg-blue-300/20 blur-[100px] dark:bg-blue-900/20" data-alt="Soft abstract blue gradient blob for background depth"></div>
+<div class="pointer-events-none absolute -bottom-20 -right-20 h-[300px] w-[300px] rounded-full bg-indigo-300/20 blur-[80px] dark:bg-indigo-900/20" data-alt="Soft abstract purple gradient blob for background depth"></div>
+<!-- Header -->
+<header class="relative z-10 flex-shrink-0 px-6 pt-8 pb-2">
+<!-- Progress Bar -->
+<div class="mb-8 flex w-full items-center gap-1.5">
+<div class="h-1.5 flex-1 rounded-full bg-primary/30"></div>
+<div class="h-1.5 flex-1 rounded-full bg-primary/30"></div>
+<div class="h-1.5 flex-1 rounded-full bg-primary shadow-glow-sm"></div>
+<div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+</div>
+<!-- Titles -->
+<h1 class="text-[32px] font-bold leading-tight tracking-tight text-[#0d101b] dark:text-white">
+                What drives you?
+            </h1>
+<p class="mt-2 text-base font-medium leading-normal text-gray-500 dark:text-gray-400">
+                Select at least 3 interests to help us find your crowd.
+            </p>
+</header>
+<!-- Scrollable Interest Chips -->
+<main class="no-scrollbar relative z-10 flex-1 overflow-y-auto px-6 pt-4 pb-32">
+<!-- Section: Academics -->
+<div class="mb-8">
+<p class="mb-3 text-xs font-bold tracking-wider text-[#4c599a] dark:text-blue-300">ACADEMICS</p>
+<div class="flex flex-wrap gap-3">
+<!-- Active State Example -->
+<button class="chip-anim glass-active group flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glow">
+<span class="material-symbols-outlined text-[18px] text-white">terminal</span>
+<p class="text-sm font-semibold leading-normal text-white">Computer Science</p>
+</button>
+<!-- Default States -->
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Psychology</p>
+</button>
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Literature</p>
+</button>
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">STEM</p>
+</button>
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">History</p>
+</button>
+</div>
+</div>
+<!-- Section: Activities -->
+<div class="mb-8">
+<p class="mb-3 text-xs font-bold tracking-wider text-[#4c599a] dark:text-blue-300">ACTIVITIES</p>
+<div class="flex flex-wrap gap-3">
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<span class="material-symbols-outlined text-[18px] text-gray-600 dark:text-gray-300">hiking</span>
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Hiking</p>
+</button>
+<!-- Active State Example -->
+<button class="chip-anim glass-active group flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glow">
+<span class="material-symbols-outlined text-[18px] text-white">sports_esports</span>
+<p class="text-sm font-semibold leading-normal text-white">Gaming</p>
+</button>
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Photography</p>
+</button>
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Cooking</p>
+</button>
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<span class="material-symbols-outlined text-[18px] text-gray-600 dark:text-gray-300">palette</span>
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Art</p>
+</button>
+</div>
+</div>
+<!-- Section: Campus Life -->
+<div class="mb-8">
+<p class="mb-3 text-xs font-bold tracking-wider text-[#4c599a] dark:text-blue-300">CAMPUS LIFE</p>
+<div class="flex flex-wrap gap-3">
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Study Groups</p>
+</button>
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<span class="material-symbols-outlined text-[18px] text-gray-600 dark:text-gray-300">nightlife</span>
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Nightlife</p>
+</button>
+<!-- Active State Example -->
+<button class="chip-anim glass-active group flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glow">
+<span class="material-symbols-outlined text-[18px] text-white">volunteer_activism</span>
+<p class="text-sm font-semibold leading-normal text-white">Volunteering</p>
+</button>
+<button class="chip-anim glass-panel flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 shadow-glass hover:bg-white/80 dark:hover:bg-white/10">
+<p class="text-sm font-medium leading-normal text-[#0d101b] dark:text-gray-200">Sports</p>
+</button>
+</div>
+</div>
+<!-- Spacer for bottom fab -->
+<div class="h-10"></div>
+</main>
+<!-- Sticky Footer Glass -->
+<div class="absolute bottom-0 left-0 z-20 w-full p-6">
+<!-- Frosted glass background for footer only -->
+<div class="absolute inset-0 -z-10 bg-white/70 backdrop-blur-xl dark:bg-[#101322]/80 border-t border-white/50 dark:border-white/10"></div>
+<button class="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-4 text-base font-bold text-white shadow-lg shadow-blue-600/30 transition-transform active:scale-[0.98]">
+                Next Step
+                <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<div class="mt-4 flex justify-center">
+<button class="text-sm font-medium text-gray-500 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200">
+                    Skip for now
+                </button>
+</div>
+</div>
+</div>
+</body></html>

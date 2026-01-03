@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder - It's a Match!</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                },
+            },
+        }
+    </script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Custom Utilities for Glassmorphism if needed beyond Tailwind */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .dark .glass-panel {
+            background: rgba(16, 19, 34, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .dark .glass-nav {
+            background: rgba(16, 19, 34, 0.85);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-hidden selection:bg-primary selection:text-white">
+<!-- App Container -->
+<div class="relative h-screen w-full flex flex-col">
+<!-- Background Context Layer (Simulates the screen underneath) -->
+<div class="absolute inset-0 z-0 overflow-hidden">
+<!-- Simulated Map View for "Discovery" context -->
+<div class="relative w-full h-full bg-slate-200 dark:bg-slate-800">
+<img class="w-full h-full object-cover opacity-80" data-alt="Blurred university campus map background" data-location="University Campus Map" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5T4rugxUt_kPcieZUXvT2YCKbm_kO26k_ytAGey23dAgUomm6HYikiPqRyZv72jdOWeu-S_SRSvimsBxH0a6iLJr5l5phhT-AleCZkHSWhmrJORa1yS6CphMWPPWCvO9rXxf4U9edCuEBSswDdGNmWCJi4Il-fdp2FptWqufBw4Cq5CVKk1tpZl1DySIdSQ2vVYIHUQ3KYno5IeEU-hFOIgMY1SIuMlkrbf1V_mw2R7LcxIH3Z0jGe2pPTBkI6T4xebr43bonBtjL"/>
+<!-- Overlay to dim background slightly before the modal hits -->
+<div class="absolute inset-0 bg-white/20 dark:bg-black/40"></div>
+</div>
+</div>
+<!-- Glass Overlay Modal (Match Success) -->
+<!-- Using backdrop-blur-xl for that heavy iOS frosted glass look -->
+<div class="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 glass-panel">
+<!-- Ambient Light Burst Animation -->
+<!-- A subtle glowing gradient behind the content -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/40 rounded-full blur-[80px] animate-pulse-slow pointer-events-none"></div>
+<!-- Content Container -->
+<div class="relative z-20 flex flex-col items-center w-full max-w-md animate-in fade-in zoom-in duration-500">
+<!-- Floating Avatars Group -->
+<div class="relative h-40 w-full flex justify-center items-center mb-8">
+<!-- User Avatar (Left, tilted left) -->
+<div class="absolute left-1/2 -translate-x-[85%] transform -rotate-12 transition-transform hover:scale-105 hover:z-30 duration-300 group cursor-pointer">
+<div class="w-32 h-32 rounded-full p-1 bg-white dark:bg-slate-700 shadow-2xl ring-1 ring-black/5 dark:ring-white/10">
+<img class="w-full h-full rounded-full object-cover" data-alt="Portrait of the current male user smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQtfW9A_e8XpOqpRZrVEAIRcNDUCGXg83NbpGTZzPfDBnBpgHyKqx3nLFSzXlIuI7ApgaNVuiaow3Zxe4yMg5IsrnthiKRd9t8708c4UgfU08aJLbX91iOBy2yNGMqZj80A2I3aztWiShOWHjeh_Agdehe1FazGv3Lm1KOLDsh7N65nE0s1d6M6NTMfJ0sMttmqssyCtbgn3DCP7JsfIbf7ISuAzwEPPV53e56qp-OVg_l-XsPxfBOHmBlYuB71qLW1ZuL966vLMI2"/>
+</div>
+</div>
+<!-- Match Avatar (Right, tilted right) -->
+<div class="absolute right-1/2 translate-x-[85%] transform rotate-12 transition-transform hover:scale-105 hover:z-30 duration-300 group cursor-pointer">
+<div class="w-32 h-32 rounded-full p-1 bg-white dark:bg-slate-700 shadow-2xl ring-1 ring-black/5 dark:ring-white/10">
+<img class="w-full h-full rounded-full object-cover" data-alt="Portrait of the matched female student smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtVTY27gUJotpxPDpWWr3VrwYsKYJ-Cl0dOov0Woz56FX4ST-plHmAGFNydzzc-GBweBFFGx5k7ENrBuFzTbEgzzM7z8Xc1sS2cEECAa1Xtr8LaCgEwvNPGy9xL2keFJkTYEISf9TJx6uj_AQsNWaxOoK66ELsY-KLL1xgNw8s8HTQfBumWHbs3QcOTnArBkbIr_imIXi9yiSetIR-R--9h1LdlAcrTfSOJvdxnUxfloWlVOg0oT8l4DciKHgpTf5JTr_X5yyvYaBm"/>
+</div>
+<!-- Match Badge -->
+<div class="absolute -bottom-2 -right-2 bg-primary text-white rounded-full p-2 shadow-lg scale-90 flex items-center justify-center border-4 border-white dark:border-slate-800">
+<span class="material-symbols-outlined text-[20px] leading-none">favorite</span>
+</div>
+</div>
+<!-- Connecting Spark Icon (Center) -->
+<div class="absolute z-30 bg-white dark:bg-slate-800 rounded-full p-2 shadow-xl flex items-center justify-center text-primary transform scale-125">
+<span class="material-symbols-outlined text-3xl animate-pulse">bolt</span>
+</div>
+</div>
+<!-- Headline Text -->
+<div class="text-center mb-2">
+<h1 class="text-slate-900 dark:text-white tracking-tight text-[42px] font-black leading-tight drop-shadow-sm">
+                        It's a Match!
+                    </h1>
+</div>
+<!-- Body Text -->
+<div class="text-center mb-10 px-6">
+<p class="text-slate-600 dark:text-slate-300 text-lg font-medium leading-normal">
+                        You and Sarah both swiped right.
+                    </p>
+</div>
+<!-- Action Buttons -->
+<div class="w-full flex flex-col gap-3 px-4">
+<!-- Primary Button -->
+<button class="group relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 bg-primary text-white text-lg font-bold shadow-lg shadow-primary/30 transition-all active:scale-95 hover:bg-blue-700">
+<span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
+<span class="truncate mr-2">Send Message</span>
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+<!-- Secondary Button -->
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 bg-transparent hover:bg-slate-100/50 dark:hover:bg-white/5 text-slate-800 dark:text-slate-200 text-base font-semibold transition-colors">
+<span class="truncate">Keep Exploring</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar (Glass Overlay) -->
+<div class="absolute bottom-6 left-0 right-0 px-4 z-50 flex justify-center w-full">
+<div class="w-full max-w-[360px] h-[72px] rounded-full glass-nav shadow-2xl shadow-black/10 border border-white/20 dark:border-white/5 flex items-center justify-between px-2">
+<!-- Nav Item: Discover (Activeish visual, but not selected state here as we are in a modal) -->
+<button class="flex-1 flex flex-col items-center justify-center gap-1 h-full rounded-full text-slate-400 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform filled">explore</span>
+<span class="text-[10px] font-medium">Discover</span>
+</button>
+<!-- Nav Item: Messages -->
+<button class="flex-1 flex flex-col items-center justify-center gap-1 h-full rounded-full text-slate-400 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">chat_bubble</span>
+<span class="text-[10px] font-medium">Messages</span>
+</button>
+<!-- Nav Item: Profile -->
+<button class="flex-1 flex flex-col items-center justify-center gap-1 h-full rounded-full text-slate-400 hover:text-primary transition-colors group">
+<div class="w-7 h-7 rounded-full overflow-hidden border border-transparent group-hover:border-primary transition-colors">
+<img class="w-full h-full object-cover" data-alt="Small user profile thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBAYoYhXVEQ35ZEqMj7HEu8kJ5ZfaI0W5e6EDjpcPd2QYOSvt3XZBsXRHuQ5pHyLPwnX5CHfvSVnQJKRebTAxDdr5VRt_5NRnnCQK4wYSLyOSqcOC5T8z7IzV_1hvfo9ao0EqqSwOJjIVGFwTigiYUAdq4wiYdjmi-mtJoBRgH9kfnycKmWoeFxrjUgxVpHNiDxgZMHqdr5kXOLdlNGDJ8HWzGu01nK6o2WBvA31dmDk2a0IjGvAdHGP4XBvjxKVYeJUDFcSKpwcWH"/>
+</div>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+<!-- Nav Item: Notifications -->
+<button class="flex-1 flex flex-col items-center justify-center gap-1 h-full rounded-full text-slate-400 hover:text-primary transition-colors group relative">
+<span class="absolute top-4 right-5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
+<span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">notifications</span>
+<span class="text-[10px] font-medium">Alerts</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

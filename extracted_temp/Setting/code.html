@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Glass effect utility */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-nav {
+            background: rgba(16, 19, 34, 0.65);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased selection:bg-primary selection:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Ambient Background Gradients (Abstract Mesh) -->
+<div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+<div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] mix-blend-screen opacity-60 animate-pulse"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px] mix-blend-screen opacity-50"></div>
+<div class="absolute top-[40%] left-[20%] w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[80px] mix-blend-overlay"></div>
+</div>
+<!-- Content Wrapper -->
+<div class="relative z-10 flex flex-col flex-1 pb-28">
+<!-- Top Header -->
+<div class="flex flex-col gap-2 px-6 pt-14 pb-2">
+<div class="flex items-center justify-between h-12">
+<!-- Back Button Placeholder if needed, currently empty as per prompt but layout ready -->
+<div class="w-10"></div>
+<!-- Profile Avatar -->
+<div class="relative group cursor-pointer">
+<div class="absolute inset-0 bg-primary/30 rounded-full blur-md group-hover:blur-lg transition-all duration-300"></div>
+<img alt="User profile avatar showing a smiling student" class="relative size-10 rounded-full border border-white/20 object-cover" data-alt="User profile avatar showing a smiling student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtAEJdD1ATXY9rWMW4NPuv_za1LbGpquDvQpTf-xy3SiAlZQlVEs3lijbyd0OtS0_Gxs4mZGeixsY_qpMJD-U92LYhohNKMpZRHJR1LG-OE6Y5OcNJUZNFR2p1F7ecC8hCXObbjwMve8IxkykM1lCHRCF8P-_TPdVnR0Dt2c8KrfE5mxxoiY6OX-tIz1ti52i4XpRxhZfnalXRB-B_7o36zNjIW8JVOIvT-3DQ7JdvPNRi8GkcTOylfc9I9AOI9POBe9jKT9x1aICQ"/>
+</div>
+</div>
+<h1 class="text-white tracking-tight text-[34px] font-bold leading-tight drop-shadow-sm">Settings</h1>
+</div>
+<!-- Section: Account & Security -->
+<div class="px-6 mt-6">
+<h3 class="text-white/60 tracking-wide text-xs font-semibold uppercase ml-3 mb-2">Account &amp; Security</h3>
+<div class="glass-panel rounded-2xl overflow-hidden flex flex-col">
+<!-- List Item: Privacy -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between group active:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-white flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-9 border border-primary/20">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<p class="text-white text-[17px] font-medium leading-normal flex-1 truncate">Privacy &amp; Safety</p>
+</div>
+<div class="shrink-0 text-white/40">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<div class="h-[1px] bg-white/5 mx-4"></div>
+<!-- List Item: Verification -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between group active:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-white flex items-center justify-center rounded-lg bg-blue-500/20 shrink-0 size-9 border border-blue-500/20">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+</div>
+<p class="text-white text-[17px] font-medium leading-normal flex-1 truncate">Campus Verification</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<p class="text-primary text-[15px] font-medium leading-normal">Verified</p>
+<span class="material-symbols-outlined text-[20px] text-white/40">chevron_right</span>
+</div>
+</div>
+<div class="h-[1px] bg-white/5 mx-4"></div>
+<!-- List Item: Password -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between group active:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-white flex items-center justify-center rounded-lg bg-gray-700/50 shrink-0 size-9 border border-white/5">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<p class="text-white text-[17px] font-medium leading-normal flex-1 truncate">Change Password</p>
+</div>
+<div class="shrink-0 text-white/40">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Preferences -->
+<div class="px-6 mt-8">
+<h3 class="text-white/60 tracking-wide text-xs font-semibold uppercase ml-3 mb-2">Preferences</h3>
+<div class="glass-panel rounded-2xl overflow-hidden flex flex-col">
+<!-- List Item: Notifications -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between group active:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-white flex items-center justify-center rounded-lg bg-orange-500/20 shrink-0 size-9 border border-orange-500/20">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</div>
+<p class="text-white text-[17px] font-medium leading-normal flex-1 truncate">Notifications</p>
+</div>
+<div class="shrink-0 text-white/40">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<div class="h-[1px] bg-white/5 mx-4"></div>
+<!-- List Item: Discovery Radius -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between group active:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-white flex items-center justify-center rounded-lg bg-green-500/20 shrink-0 size-9 border border-green-500/20">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+</div>
+<p class="text-white text-[17px] font-medium leading-normal flex-1 truncate">Discovery Radius</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<p class="text-white/50 text-[15px] font-normal leading-normal">5 km</p>
+<span class="material-symbols-outlined text-[20px] text-white/40">chevron_right</span>
+</div>
+</div>
+<div class="h-[1px] bg-white/5 mx-4"></div>
+<!-- List Item: Appearance -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between group active:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-white flex items-center justify-center rounded-lg bg-purple-500/20 shrink-0 size-9 border border-purple-500/20">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</div>
+<p class="text-white text-[17px] font-medium leading-normal flex-1 truncate">Appearance</p>
+</div>
+<div class="shrink-0 text-white/40">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Support -->
+<div class="px-6 mt-8">
+<h3 class="text-white/60 tracking-wide text-xs font-semibold uppercase ml-3 mb-2">Support</h3>
+<div class="glass-panel rounded-2xl overflow-hidden flex flex-col">
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between group active:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-white flex items-center justify-center rounded-lg bg-teal-500/20 shrink-0 size-9 border border-teal-500/20">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</div>
+<p class="text-white text-[17px] font-medium leading-normal flex-1 truncate">Help Center</p>
+</div>
+<div class="shrink-0 text-white/40">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<div class="h-[1px] bg-white/5 mx-4"></div>
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between group active:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-white flex items-center justify-center rounded-lg bg-pink-500/20 shrink-0 size-9 border border-pink-500/20">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</div>
+<p class="text-white text-[17px] font-medium leading-normal flex-1 truncate">Terms of Service</p>
+</div>
+<div class="shrink-0 text-white/40">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Danger Zone -->
+<div class="px-6 mt-12 mb-6">
+<div class="glass-panel rounded-2xl overflow-hidden flex flex-col border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.05)]">
+<button class="w-full flex items-center justify-center min-h-[56px] px-4 group hover:bg-white/5 transition-colors">
+<p class="text-white text-[17px] font-medium">Log Out</p>
+</button>
+<div class="h-[1px] bg-white/5 mx-4"></div>
+<button class="w-full flex items-center justify-center min-h-[56px] px-4 group hover:bg-red-500/10 transition-colors">
+<p class="text-red-500 text-[17px] font-medium">Delete Account</p>
+</button>
+</div>
+<p class="text-center text-white/30 text-xs mt-6 font-medium">UniFinder v2.4.0 (Build 302)</p>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 w-full z-50 px-6 pb-6 pt-2 pointer-events-none">
+<div class="glass-nav pointer-events-auto w-full h-[72px] rounded-3xl flex items-center justify-around shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+<!-- Discover -->
+<button class="flex flex-col items-center justify-center gap-1 w-16 h-full text-white/40 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[26px]">explore</span>
+<span class="text-[10px] font-medium">Discover</span>
+</button>
+<!-- Messages -->
+<button class="flex flex-col items-center justify-center gap-1 w-16 h-full text-white/40 hover:text-white transition-colors relative">
+<span class="material-symbols-outlined text-[26px]">chat_bubble</span>
+<span class="text-[10px] font-medium">Messages</span>
+<div class="absolute top-4 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#1a1d2d]"></div>
+</button>
+<!-- Profile (Active) -->
+<button class="flex flex-col items-center justify-center gap-1 w-16 h-full text-primary relative">
+<div class="absolute inset-0 bg-primary/10 blur-xl rounded-full"></div>
+<span class="material-symbols-outlined text-[26px] fill-1">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+<!-- Notifications -->
+<button class="flex flex-col items-center justify-center gap-1 w-16 h-full text-white/40 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[26px]">notifications</span>
+<span class="text-[10px] font-medium">Alerts</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder - Discover</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(16, 19, 34, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-button {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-nav {
+            background: rgba(16, 19, 34, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-white overflow-hidden h-screen w-full relative">
+<!-- Ambient Background -->
+<div class="absolute inset-0 z-0">
+<!-- Blurred Campus Image -->
+<div class="absolute inset-0 bg-cover bg-center opacity-40 blur-xl scale-110" data-alt="Blurred university campus architecture with brick buildings and evening lights" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBeiqp8dYMtoR-MImvavM__mWA39rRlZd5m4qCaYz5j0TBV15yrb-C4aTrUNtX6K8IXMJrpMYHj0866dngxGiq9QMjauR_MzXjtnT9PRWZRU6FYnZP1cFvxOXYeNe61SnFixIeZjaBoYtC4KqBIv6WcykiHOh2jAd9Yr_UzbM4Sya3hqaLKeFrt5-xPTp9ctLN_X-HWEos_MR5Iq-Q8eW9DwYPhPPb82yHe-mLO9oXwTa7AtVDcL4NHDNV3DvK-s4YLP9ZfjjJEacJm');">
+</div>
+<!-- Gradient Overlay to darken -->
+<div class="absolute inset-0 bg-gradient-to-b from-background-dark/80 via-background-dark/60 to-background-dark/90"></div>
+</div>
+<!-- Main Container -->
+<div class="relative z-10 flex flex-col h-full w-full max-w-md mx-auto">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between px-6 pt-12 pb-4">
+<h1 class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-1">
+                UniFinder
+            </h1>
+<button class="glass-button h-10 w-10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">tune</span>
+</button>
+</header>
+<!-- Card Area -->
+<main class="flex-1 px-4 pb-24 flex flex-col items-center justify-center w-full">
+<!-- Profile Card -->
+<div class="relative w-full aspect-[3/4] max-h-[65vh] rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 group">
+<!-- User Image -->
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Portrait of a female university student looking confident" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCli4xWJmn3agbsBs2YGP_UtsJl8AOBnLvly8e2mIKKxv0IHndzmSd79sVHBFlzZgcyTdXpLg5QNE9C0CGWkTqgCD1Tk8raWlHN9n3-rMMasgHWaPCjeOyv8-uFaRt2raIF_HCj1-C438VLwGFr26RmotzABdB91YBGcR2B-cNYYVXO_ekACpyocjhkl3PaX-_vLH2KnhtMcgS7Azewq6LzcZ96uih4-XBWYTw4iskkHGCXxljkB7ar70K2Aysx-BUXdXWSE3HHhcAt');">
+</div>
+<!-- Gradient Scrim for Text Readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-20 flex flex-col justify-end p-6">
+<!-- Verified Badge -->
+<div class="flex items-center gap-1.5 mb-2 bg-primary/20 backdrop-blur-md w-fit px-3 py-1 rounded-full border border-primary/30">
+<span class="material-symbols-outlined text-primary" style="font-size: 16px; font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-primary-100 text-xs font-bold tracking-wide text-white">Verified Student</span>
+</div>
+<!-- Name & Age -->
+<div class="flex items-end gap-2 mb-1">
+<h2 class="text-3xl font-bold text-white leading-tight">Alex</h2>
+<span class="text-2xl font-medium text-white/80 mb-[2px]">21</span>
+</div>
+<!-- Department/Year -->
+<p class="text-white/70 text-base font-medium mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-white/60" style="font-size: 18px;">school</span>
+                        Computer Science • Year 3
+                    </p>
+<!-- Interests/Chips -->
+<div class="flex flex-wrap gap-2">
+<div class="flex h-8 items-center justify-center rounded-full glass-button px-3 hover:bg-white/20 transition-colors">
+<span class="text-white text-xs font-semibold">Coding</span>
+</div>
+<div class="flex h-8 items-center justify-center rounded-full glass-button px-3 hover:bg-white/20 transition-colors">
+<span class="text-white text-xs font-semibold">Photography</span>
+</div>
+<div class="flex h-8 items-center justify-center rounded-full bg-primary/80 backdrop-blur-md border border-primary px-3 shadow-[0_0_10px_rgba(19,55,236,0.4)]">
+<span class="text-white text-xs font-semibold">Coffee</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reaction Bar (Floating) -->
+<div class="absolute bottom-24 w-full px-12 flex items-center justify-between">
+<!-- Pass Button -->
+<button class="flex h-16 w-16 items-center justify-center rounded-full glass-button border-red-500/30 text-red-400 hover:bg-red-500/20 hover:scale-110 hover:border-red-500/50 transition-all duration-300 shadow-lg">
+<span class="material-symbols-outlined" style="font-size: 32px; font-weight: 700;">close</span>
+</button>
+<!-- Super Like Button -->
+<button class="flex h-14 w-14 items-center justify-center rounded-full bg-primary border border-primary-400 text-white hover:scale-110 transition-all duration-300 shadow-[0_0_25px_rgba(19,55,236,0.6)] z-10 -mt-6">
+<span class="material-symbols-outlined" style="font-size: 28px; font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<!-- Like Button -->
+<button class="flex h-16 w-16 items-center justify-center rounded-full glass-button border-green-500/30 text-green-400 hover:bg-green-500/20 hover:scale-110 hover:border-green-500/50 transition-all duration-300 shadow-lg">
+<span class="material-symbols-outlined" style="font-size: 32px; font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="glass-nav absolute bottom-0 w-full pb-6 pt-3 px-6 flex justify-between items-center rounded-t-3xl">
+<!-- Discover (Active) -->
+<a class="flex flex-col items-center gap-1 text-primary relative group" href="#">
+<div class="absolute -top-3 h-1 w-8 bg-primary rounded-full shadow-[0_0_10px_rgba(19,55,236,0.8)]"></div>
+<span class="material-symbols-outlined" style="font-size: 26px; font-variation-settings: 'FILL' 1;">style</span>
+<span class="text-[10px] font-bold tracking-wide">Discover</span>
+</a>
+<!-- Messages -->
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-size: 26px;">chat_bubble</span>
+<span class="text-[10px] font-medium tracking-wide">Messages</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-size: 26px;">person</span>
+<span class="text-[10px] font-medium tracking-wide">Profile</span>
+</a>
+<!-- Notifications -->
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-size: 26px;">notifications</span>
+<span class="text-[10px] font-medium tracking-wide">Alerts</span>
+</a>
+</nav>
+</div>
+</body></html>

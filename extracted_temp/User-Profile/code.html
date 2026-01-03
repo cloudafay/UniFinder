@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder - User Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Hide Scrollbar for clean carousel */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-base {
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-panel {
+            background: rgba(16, 19, 34, 0.65);
+            @apply glass-base;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: background 0.3s ease;
+        }
+        
+        .glass-card:active {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-button {
+            background: rgba(19, 55, 236, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(19, 55, 236, 0.4);
+            transition: all 0.2s ease;
+        }
+        
+        .glass-button:active {
+            transform: scale(0.98);
+            background: rgba(19, 55, 236, 0.9);
+        }
+
+        .glass-nav {
+            background: rgba(16, 19, 34, 0.85);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(135deg, #FFFFFF 0%, #929bc9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-white font-display antialiased overflow-x-hidden">
+<!-- Immersive Background -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+<!-- Background Image -->
+<div class="absolute inset-0 bg-cover bg-center opacity-50 scale-105" data-alt="Blurred university campus library exterior at twilight" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBn1XaTyWXohHjRWaJZ3YuwNG6C5c3vQPcrnEzPgldwn6dp3vVPOaeDEVWSsFRtVL7-A_7nlTzNE3LoKC53Zi0hNtKNWMtGCr6caQYDvfVbubmvXNf5hfG5xf4fQ4bSFmgWIhEDCmieHkKnDiZIzCwRlqa9Bqrzf5Ne4rrbpDDzstiDM2GYwdCorEcH3W5LLyoguVmvbLNFCEpwbLDIBgK0cSPj3RA4GCggoCBxfBSg4ZmKzqE09dptm2MbyUnnKltiH_ZITrKLMTcA');"></div>
+<!-- Gradient Overlay for Contrast -->
+<div class="absolute inset-0 bg-gradient-to-b from-background-dark/40 via-background-dark/80 to-background-dark"></div>
+</div>
+<!-- Main Scrollable Content -->
+<div class="relative z-10 flex flex-col min-h-screen pb-28">
+<!-- Sticky Transparent Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-6 pt-14 pb-4 transition-all duration-300">
+<div class="w-10"></div> <!-- Balance spacer -->
+<h2 class="text-white font-bold text-lg tracking-wide opacity-90 drop-shadow-md">Profile</h2>
+<div class="w-10 flex justify-end">
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</div>
+</header>
+<!-- Glass Profile Header -->
+<div class="px-5 mt-2 mb-6">
+<div class="glass-panel rounded-[2rem] p-6 flex flex-col items-center text-center relative overflow-hidden group/profile">
+<!-- Subtle internal glow -->
+<div class="absolute -top-20 -right-20 w-40 h-40 bg-primary/30 rounded-full blur-[60px]"></div>
+<!-- Avatar -->
+<div class="relative mb-4">
+<div class="w-28 h-28 rounded-full p-1 border-2 border-white/20 shadow-xl">
+<div class="w-full h-full rounded-full bg-cover bg-center" data-alt="Portrait of Alex Rivera smiling in casual wear" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAGodvntFdYqlvb34MTthN_WWXl4IHKLyh8kQMiiQkdm8_iPOXrPQkwlkime9mi9r6ko2TCodu1FuDWVY8qokqx7mie62ZhoaI417YkHFI-FwwxpuWeUBB39s58g8Kjp5uVeEWP8jPlfqBMxgNG3-g-7E95LfX3LV6HcJdCM0t999dz4b61wVLVysWq1LLm6DCeHLjko3zdfdoV7TIa7_NsrlKPM9Q8cPd8c0HQEdiJX8RIQGiqqZrkx4BUG4jLE6erLkFVZqWHuvmv');"></div>
+</div>
+<div class="absolute bottom-1 right-1 bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center border-2 border-[#151829] shadow-lg">
+<span class="material-symbols-outlined text-[14px]">edit</span>
+</div>
+</div>
+<!-- Info -->
+<div class="z-10 w-full">
+<h1 class="text-[26px] font-extrabold text-white tracking-tight leading-tight mb-1">Alex Rivera</h1>
+<p class="text-[#929bc9] text-sm font-medium mb-5 tracking-wide">Junior • Computer Science @ NYU</p>
+<!-- Edit Profile Accent CTA -->
+<button class="glass-button w-full h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold tracking-wide text-white uppercase shadow-lg">
+<span>Edit Profile</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Floating Photo Carousel -->
+<div class="mb-6">
+<div class="px-6 flex items-center justify-between mb-3">
+<h3 class="text-white text-lg font-bold tracking-tight">Highlights</h3>
+<span class="text-xs text-primary font-semibold">View All</span>
+</div>
+<div class="flex overflow-x-auto no-scrollbar gap-4 px-6 snap-x snap-mandatory">
+<!-- Photo 1 -->
+<div class="min-w-[180px] w-[180px] h-[240px] snap-center rounded-2xl overflow-hidden relative shadow-lg transform transition-transform active:scale-95">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Group of students studying together at a library table" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAGa1yDOu0br4gMF2GgCsmsoFu69SXPl2B_OXj6gA3R8XvOb4TFyLR5pB07TyZ6dwnbjS8F1Kt4oSUV_1F6Jzqb8GqCS44uI3bKS7lVtKxDSUA8wGthpXVyOBAZ1GoMo4xowyKjw2yc_PxCsiD4udWc1ZCmWLRiG9Q2fS-HbmLjGEbFLcgF9aG_dApw4QnePunSNgfin-SD-N5tNRueeFWUzcNdVNRTUw_2Q61uZE1M4h7or_j5m5fw3ai6VTOZsMuiaYLSaP38_Cy');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+<div class="absolute bottom-3 left-3">
+<p class="text-white font-bold text-sm">Study Nights</p>
+</div>
+</div>
+<!-- Photo 2 -->
+<div class="min-w-[180px] w-[180px] h-[240px] snap-center rounded-2xl overflow-hidden relative shadow-lg transform transition-transform active:scale-95">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Person holding a camera in a city park" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDpr4lXiFXVN03H9Ri_GcEt0A6yl5p0JeYKYIuPVVyDPQ0W2UBSSYnwamsz9HCXwdBTC4WGqPkotgPVC5s9HYOncE_gn8BiRjm48KtsY2uEczZWnScY3FpiKdV63VNF8t58VT6BdC2RCPkvxPBBm_9tkv4FrDeG1YLUa1AANyIoWWBRF8sJuP-3bn2Lpfc2bBnGrLfnNWzeJym9qqrODTM6O3AgsACxnN-m7ISQUg14lmpA1d22xMa8pnEIhIdHK1RffMh3IIMSNhVc');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+<div class="absolute bottom-3 left-3">
+<p class="text-white font-bold text-sm">Photography</p>
+</div>
+</div>
+<!-- Photo 3 -->
+<div class="min-w-[180px] w-[180px] h-[240px] snap-center rounded-2xl overflow-hidden relative shadow-lg transform transition-transform active:scale-95">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A hackathon team working on laptops" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDloKViHrwTVbsjs4-I1OlDKiNLVcrq8WK6FUdiQL0v-1SyYYs0qmqn3odYl2aX3Fy8Srj53iARgXjVfKp_sHfbgnmXtqvOmlmriursQ1hmTnlsKdenFvUn4He5TWHtGtBVy_Km13bdrKXrWzItowCLym0WEE4tyB8FebrEQMZlWSoEyEC3H28mqx8sbxmEldra4giWi_Wn9CkNkdhFn19xXwWLGYdD8EXN7WuOQU7MXOgVHW_71hbYScem1WXzGy4pjlR2y83I1A_V');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+<div class="absolute bottom-3 left-3">
+<p class="text-white font-bold text-sm">Hackathon '23</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Panes -->
+<div class="px-5 space-y-4">
+<!-- Bio Section -->
+<div class="glass-card rounded-[1.25rem] p-5">
+<div class="flex items-center gap-2 mb-3 opacity-90">
+<span class="material-symbols-outlined text-primary text-[20px]">account_circle</span>
+<h3 class="text-white text-base font-bold">About Me</h3>
+</div>
+<p class="text-gray-200 text-[15px] font-normal leading-relaxed">
+                    Coffee enthusiast, late-night coder, and weekend hiker. Looking for study buddies and tennis partners! 🎾☕️
+                </p>
+</div>
+<!-- Interests Section -->
+<div class="glass-card rounded-[1.25rem] p-5">
+<div class="flex items-center gap-2 mb-4 opacity-90">
+<span class="material-symbols-outlined text-primary text-[20px]">interests</span>
+<h3 class="text-white text-base font-bold">Interests</h3>
+</div>
+<div class="flex flex-wrap gap-2">
+<div class="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/90 backdrop-blur-sm">Photography</div>
+<div class="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/90 backdrop-blur-sm">Coding</div>
+<div class="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/90 backdrop-blur-sm">Tennis</div>
+<div class="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/90 backdrop-blur-sm">Indie Music</div>
+<div class="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/90 backdrop-blur-sm">Travel</div>
+<div class="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/90 backdrop-blur-sm">Hiking</div>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-card rounded-[1.25rem] p-4 flex flex-col items-center justify-center">
+<span class="text-2xl font-bold text-white">124</span>
+<span class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mt-1">Connections</span>
+</div>
+<div class="glass-card rounded-[1.25rem] p-4 flex flex-col items-center justify-center">
+<span class="text-2xl font-bold text-white">32</span>
+<span class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mt-1">Events</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Glass Bottom Navigation -->
+<div class="fixed bottom-0 w-full z-50 glass-nav pb-6 pt-4 px-2">
+<div class="flex justify-around items-center max-w-lg mx-auto">
+<button class="flex flex-col items-center gap-1 w-16 group">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-white transition-colors text-[26px]">explore</span>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-white transition-colors">Discover</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 group">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-white transition-colors text-[26px]">chat_bubble</span>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-white transition-colors">Messages</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 relative">
+<!-- Active Indicator Glow -->
+<div class="absolute -top-10 w-12 h-12 bg-primary/40 blur-xl rounded-full"></div>
+<span class="material-symbols-outlined text-primary fill-1 text-[26px] z-10 font-variation-settings-fill">person</span>
+<span class="text-[10px] font-bold text-primary z-10">Profile</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 group">
+<div class="relative">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-white transition-colors text-[26px]">notifications</span>
+<span class="absolute top-0 right-0.5 w-2 h-2 bg-primary rounded-full ring-2 ring-[#1e2336]"></span>
+</div>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-white transition-colors">Alerts</span>
+</button>
+</div>
+</div>
+<style>
+        .font-variation-settings-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</body></html>

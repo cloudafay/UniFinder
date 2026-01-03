@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register - Basic Info</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "1.5rem", 
+                        "xl": "2rem", 
+                        "2xl": "2.5rem",
+                        "3xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glow': '0 0 20px rgba(19, 55, 236, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Glassmorphism Utilities */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .dark .glass-card {
+            background: rgba(16, 19, 34, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .dark .glass-input {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 0 2px rgba(19, 55, 236, 0.1), 0 0 20px rgba(19, 55, 236, 0.15);
+        }
+        .dark .glass-input:focus {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Hide scrollbar for horizontal scrolling areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300 min-h-screen overflow-x-hidden selection:bg-primary/20">
+<!-- Ambient Background Blobs -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-200/40 dark:bg-blue-900/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten filter opacity-70 animate-blob"></div>
+<div class="absolute top-[20%] right-[-10%] w-[400px] h-[400px] bg-indigo-200/40 dark:bg-indigo-900/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten filter opacity-70 animate-blob animation-delay-2000"></div>
+<div class="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-purple-100/40 dark:bg-purple-900/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten filter opacity-70 animate-blob animation-delay-4000"></div>
+</div>
+<div class="relative z-10 flex flex-col min-h-screen w-full max-w-md mx-auto p-4 md:p-6">
+<!-- Header: Back Button & Progress -->
+<header class="flex items-center justify-between py-2">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-slate-800 dark:text-white group">
+<span class="material-symbols-outlined text-[24px] group-hover:-translate-x-0.5 transition-transform">arrow_back_ios_new</span>
+</button>
+<!-- Page Indicators -->
+<div class="flex items-center gap-2">
+<div class="h-2.5 w-2.5 rounded-full bg-primary shadow-glow transition-all duration-300"></div>
+<div class="h-2.5 w-2.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<div class="h-2.5 w-2.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<div class="h-2.5 w-2.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</div>
+<!-- Spacer for alignment -->
+<div class="w-10"></div>
+</header>
+<!-- Intro Text -->
+<section class="mt-6 mb-8 text-center px-4">
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Let's introduce you.</h1>
+<p class="text-slate-500 dark:text-slate-400 font-medium">Start by telling your campus who you are.</p>
+</section>
+<!-- Main Glass Form Card -->
+<main class="glass-card w-full rounded-2xl shadow-glass p-6 md:p-8 flex flex-col gap-6 mb-8 relative overflow-hidden">
+<!-- Decorative top highlight for glass feel -->
+<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-50"></div>
+<!-- Full Name Input -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-200 ml-1" for="fullname">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">person</span>
+<input class="glass-input w-full pl-12 pr-4 py-4 rounded-xl border-none text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-0 text-base font-medium" id="fullname" placeholder="e.g. Alex Johnson" type="text"/>
+</div>
+</div>
+<!-- Department Input -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-200 ml-1" for="department">Major / Department</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">school</span>
+<input class="glass-input w-full pl-12 pr-12 py-4 rounded-xl border-none text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-0 text-base font-medium" id="department" placeholder="e.g. Computer Science" type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-primary pointer-events-none opacity-60">search</span>
+</div>
+</div>
+<!-- Class Year Selector -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-200 ml-1">Class Year</label>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-2 px-2 mask-linear">
+<label class="flex-shrink-0 cursor-pointer group">
+<input checked="" class="peer sr-only" name="year" type="radio" value="freshman"/>
+<span class="block px-5 py-2.5 rounded-full bg-white/40 dark:bg-white/5 border border-transparent text-slate-600 dark:text-slate-300 text-sm font-medium transition-all peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-glow hover:bg-white/60 dark:hover:bg-white/10">
+                            Freshman
+                        </span>
+</label>
+<label class="flex-shrink-0 cursor-pointer group">
+<input class="peer sr-only" name="year" type="radio" value="sophomore"/>
+<span class="block px-5 py-2.5 rounded-full bg-white/40 dark:bg-white/5 border border-transparent text-slate-600 dark:text-slate-300 text-sm font-medium transition-all peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-glow hover:bg-white/60 dark:hover:bg-white/10">
+                            Sophomore
+                        </span>
+</label>
+<label class="flex-shrink-0 cursor-pointer group">
+<input class="peer sr-only" name="year" type="radio" value="junior"/>
+<span class="block px-5 py-2.5 rounded-full bg-white/40 dark:bg-white/5 border border-transparent text-slate-600 dark:text-slate-300 text-sm font-medium transition-all peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-glow hover:bg-white/60 dark:hover:bg-white/10">
+                            Junior
+                        </span>
+</label>
+<label class="flex-shrink-0 cursor-pointer group">
+<input class="peer sr-only" name="year" type="radio" value="senior"/>
+<span class="block px-5 py-2.5 rounded-full bg-white/40 dark:bg-white/5 border border-transparent text-slate-600 dark:text-slate-300 text-sm font-medium transition-all peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-glow hover:bg-white/60 dark:hover:bg-white/10">
+                            Senior
+                        </span>
+</label>
+<label class="flex-shrink-0 cursor-pointer group">
+<input class="peer sr-only" name="year" type="radio" value="grad"/>
+<span class="block px-5 py-2.5 rounded-full bg-white/40 dark:bg-white/5 border border-transparent text-slate-600 dark:text-slate-300 text-sm font-medium transition-all peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-glow hover:bg-white/60 dark:hover:bg-white/10">
+                            Grad
+                        </span>
+</label>
+</div>
+</div>
+<!-- Bio Input -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-200 ml-1" for="bio">Bio</label>
+<div class="relative">
+<textarea class="glass-input w-full p-4 rounded-xl border-none text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-0 text-base font-medium resize-none" id="bio" placeholder="Tell us a bit about yourself..." rows="3"></textarea>
+</div>
+<p class="text-xs text-slate-400 ml-1">This will be shown on your public profile.</p>
+</div>
+<div class="pt-2"></div>
+<!-- Trust Indicator -->
+<div class="flex items-center justify-center gap-1.5 py-2 px-4 bg-primary/5 dark:bg-primary/10 rounded-lg w-fit mx-auto border border-primary/10">
+<span class="material-symbols-outlined text-[16px] text-primary">lock</span>
+<span class="text-xs font-semibold text-primary/80 tracking-wide uppercase">Verified University Students Only</span>
+</div>
+<!-- Continue Button -->
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-14 rounded-full shadow-lg shadow-primary/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-2">
+<span>Continue</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</main>
+<!-- Bottom spacing -->
+<div class="h-6"></div>
+</div>
+</body></html>

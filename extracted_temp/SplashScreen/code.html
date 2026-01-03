@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder Splash Screen</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Keyframes for Animations (simulated in CSS since no JS allowed for animation logic) */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-blob {
+            animation: blob 10s infinite;
+        }
+        
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .dark .glass-panel {
+            background: rgba(16, 19, 34, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-button-secondary {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(19, 55, 236, 0.3);
+        }
+        
+        .dark .glass-button-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-hidden">
+<div class="relative flex h-screen w-full flex-col justify-between items-center overflow-hidden">
+<!-- Animated Background Elements -->
+<div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+<!-- Top Right Blob -->
+<div class="absolute top-0 -right-4 w-72 h-72 bg-primary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob dark:mix-blend-screen dark:bg-primary/20"></div>
+<!-- Top Left Blob -->
+<div class="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 dark:bg-purple-900/40 dark:mix-blend-screen"></div>
+<!-- Bottom Center Blob -->
+<div class="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000 dark:bg-blue-900/40 dark:mix-blend-screen"></div>
+<!-- Overall Noise/Texture Overlay for Glass feel -->
+<div class="absolute inset-0 bg-white/10 backdrop-blur-[2px]"></div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col justify-center items-center w-full px-6 z-10">
+<!-- Floating Logo Container -->
+<div class="animate-float mb-8">
+<!-- Using a styled div to represent the logo based on the provided image component pattern but adapted for logo -->
+<div class="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-primary to-blue-500 shadow-2xl flex items-center justify-center relative overflow-hidden glass-panel border-none ring-1 ring-white/20">
+<div class="absolute inset-0 bg-white/20"></div>
+<!-- Icon -->
+<span class="material-symbols-outlined text-6xl text-white relative z-10">school</span>
+<!-- Shine effect on logo -->
+<div class="absolute -top-[100%] -left-[100%] w-[300%] h-[300%] bg-gradient-to-br from-transparent via-white/30 to-transparent rotate-45 transform translate-y-full"></div>
+</div>
+</div>
+<!-- Headline Text Component (Modified) -->
+<div class="text-center max-w-xs mx-auto">
+<h1 class="text-4xl font-black tracking-tighter text-slate-900 dark:text-white mb-2">
+                    UniFinder
+                </h1>
+<h2 class="text-slate-600 dark:text-slate-300 tracking-normal text-lg font-medium leading-relaxed px-2">
+                    Discover your campus. <br/> Connect safely.
+                </h2>
+</div>
+</div>
+<!-- Bottom Actions (ButtonGroup Component Modified) -->
+<div class="w-full pb-10 px-6 z-10">
+<div class="flex flex-col gap-4 w-full max-w-md mx-auto">
+<!-- Primary Action -->
+<button class="group relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 bg-primary text-white text-lg font-bold shadow-[0_8px_30px_rgb(19,55,236,0.2)] transition-all active:scale-[0.98] hover:shadow-[0_8px_30px_rgb(19,55,236,0.4)]">
+<div class="absolute inset-0 bg-white/20 group-hover:bg-white/10 transition-colors"></div>
+<span class="relative truncate z-10">Get Started</span>
+<span class="material-symbols-outlined ml-2 text-xl relative z-10">arrow_forward</span>
+</button>
+<!-- Secondary/Ghost Action (Glassmorphism) -->
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 glass-button-secondary text-primary dark:text-white text-lg font-bold transition-all active:scale-[0.98] hover:bg-white/40 dark:hover:bg-white/10">
+<span class="truncate">Login</span>
+</button>
+</div>
+<!-- Safe Area Spacer for iOS -->
+<div class="h-2"></div>
+</div>
+</div>
+</body></html>

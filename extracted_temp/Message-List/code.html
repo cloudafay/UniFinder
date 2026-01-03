@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder Messages</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Config -->
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                    boxShadow: {
+                        'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
+                        'glow': '0 0 15px rgba(19, 55, 236, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles for glassmorphism and scroll effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .dark .glass-panel {
+            background: rgba(16, 19, 34, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .dark .glass-nav {
+            background: rgba(16, 19, 34, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Floating avatar shadow effect */
+        .avatar-float {
+            box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(255,255,255,0.8);
+        }
+        .dark .avatar-float {
+             box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(30,30,40,0.5);
+        }
+
+        /* Gradient mask for smooth scroll fade */
+        .scroll-mask {
+            mask-image: linear-gradient(to bottom, transparent, black 20px, black calc(100% - 100px), transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 20px, black calc(100% - 100px), transparent);
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .unread-glow {
+            box-shadow: 0 0 12px 2px rgba(19, 55, 236, 0.15);
+            border-left: 3px solid #1337ec;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display h-screen flex flex-col overflow-hidden text-[#0d101b] dark:text-white transition-colors duration-300">
+<!-- Top Header Area (Fixed) -->
+<div class="z-20 px-5 pt-12 pb-2 flex flex-col gap-4 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md sticky top-0">
+<!-- Title & Action -->
+<div class="flex items-center justify-between">
+<h1 class="text-3xl font-bold tracking-tight">Messages</h1>
+<button class="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined font-semibold">edit_square</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="relative w-full">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400">search</span>
+</div>
+<input class="w-full h-12 pl-11 pr-4 rounded-full bg-white/50 dark:bg-white/5 border-none ring-1 ring-black/5 dark:ring-white/10 focus:ring-2 focus:ring-primary/50 text-base placeholder-gray-400 dark:placeholder-gray-500 backdrop-blur-sm transition-all" placeholder="Search students..." type="text"/>
+</div>
+<!-- Pinned / Favorites (Horizontal Scroll) -->
+<div class="w-full pt-2">
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-2 px-1">
+<!-- Add New -->
+<div class="flex flex-col items-center gap-1 min-w-[64px]">
+<div class="size-16 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="text-xs font-medium text-gray-500">New</span>
+</div>
+<!-- Favorite 1 -->
+<div class="flex flex-col items-center gap-1 min-w-[64px]">
+<div class="relative">
+<div class="size-16 rounded-full bg-cover bg-center avatar-float" data-alt="Portrait of a young woman with long hair" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbhYMGT44YJfP1Q0aOTRE9dS2-FcTz2Wvnykv2cvgfsX02a4I7BfQT1YV0yDkdstv-4sBxkFVl5HscTmW2yFFIzAeFqSxBjbleCcXp6bUdT1o1HLF4LG1pmTf48vpdv-beKeBRk7NWOpbesMgtzBzZxWFkoMGN6mjpNQU14V7fYBivw2z0GU987ik3JZwnY3NwgwSg_uWT2tvpHwvGizG42yJkgyPpScVF_5ljn47yLCvTit8jYpsQJoeGCRrH0dGIBzoV_cPdeJxD')"></div>
+<div class="absolute bottom-0 right-0 size-4 bg-green-500 rounded-full border-2 border-white dark:border-background-dark"></div>
+</div>
+<span class="text-xs font-medium">Sarah</span>
+</div>
+<!-- Favorite 2 -->
+<div class="flex flex-col items-center gap-1 min-w-[64px]">
+<div class="relative">
+<div class="size-16 rounded-full bg-cover bg-center avatar-float" data-alt="Portrait of a young man with short dark hair" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDccMNf2Pu4vxSuZp1VePSWlFL1nMMocVo6Zc5PbiAFSQQBwqn4_VSHiNg4IcMNn8JIg-B-o2yQmOFfgtwYc3MumYFr5tUseV0W0dXW-Q1YxA5FGJEZCO5zaCIef2XneYk6jX1hJNJ-KcZUCQ6FWCzokDin3LRQcfCO0rGogQNIKyCuJcBzFupB-RbMSm2s4d4gcSHXfAUt_ExHhoTCRGMwQl8gxojIc5KED18Y7I9egEyfvPiHR_Uu-nMpR6r655KVuN4vp7wn8lRH')"></div>
+<div class="absolute bottom-0 right-0 size-4 bg-green-500 rounded-full border-2 border-white dark:border-background-dark"></div>
+</div>
+<span class="text-xs font-medium">David</span>
+</div>
+<!-- Favorite 3 -->
+<div class="flex flex-col items-center gap-1 min-w-[64px]">
+<div class="relative">
+<div class="size-16 rounded-full bg-cover bg-center avatar-float" data-alt="Portrait of a woman smiling outdoors" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDUVVeSjyd7hTSdjwu2d8TbHqVSkPxyF_0GgxmYWrziMfxMH3JpWKfFVfwXjmOlNvhCEvBPlH3NNLI6G8C_CecSN9IkzgxCvAaHTJAFHQaJ9UiDWbqdNKNoBS1hhd2GYyQ0cvf51Q4OLhmv1zhp99PuKgIS5JtPXH_A_pkYenC3KjjU9vGvx1eHOVWAKTo_oigo6YZfvVt5NJbJ1P64Ma7Ru0La2t6GcCyPHqXXwCqs41rtnFQGsAuPV_X-vFYMLFweKpWnBBs7xzxZ')"></div>
+</div>
+<span class="text-xs font-medium">Emily</span>
+</div>
+<!-- Favorite 4 -->
+<div class="flex flex-col items-center gap-1 min-w-[64px]">
+<div class="relative">
+<div class="size-16 rounded-full bg-cover bg-center avatar-float" data-alt="Portrait of a young man with a beard" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCnkRJLHAmf6SmCqHlnc8XKYHtBakHP-sNnaZ52aj6gO-sAV5QMhDHXXG2zPPKddMwdK_afFQAEXYLaKjID6FQq9zuUnzLI4W8sRyWG3TzqSXX5bFDgAjk7Dq2aT1FLRMQ-vhRBpTly-MrRM8mxGzwCNlh8fiuvcrymFaVbGjLJQaTGBevQiR7syqc4S2cge9giVUEmWdDfKYP1ntpiBD0x9GgQFV7Ywxd0LPEXdXoN1lGgjb1HoRn3mbZ8dqg7GZKcwKDgjQ2_hggX')"></div>
+</div>
+<span class="text-xs font-medium">Marcus</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Message List -->
+<main class="flex-1 overflow-y-auto no-scrollbar relative z-10 pb-24 px-4 pt-2 space-y-3">
+<!-- Unread Message 1 -->
+<div class="glass-panel unread-glow p-4 rounded-2xl flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="relative shrink-0">
+<div class="size-14 rounded-full bg-cover bg-center avatar-float" data-alt="Portrait of a smiling woman with glasses" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBsOaO16hjW9O_cj159FC97jiYzqKFBzznyNdiyC65720vciSaDqfh3Ngc7HfojwF8ASI0Nz8zuFn17jDo6r5Jeds1XSCEuv36a3YneiaE3cbJL0Ls5iSfIjeH0w_8CYysAMwlD1sA1zivqxModLJztwxds-1HGi1PX1UZ6sAunnQKRE_6GQRGgFqTXpStvl_1mcIEfIXJhr6vBlf7kN7iq1sx7tNcsDfVe-shKaCfumQC3w6azgjRERBiAY2tbNoJJlnC4Fdhojsa')"></div>
+<div class="absolute -top-1 -right-1 size-5 bg-primary rounded-full border-2 border-white dark:border-background-dark flex items-center justify-center">
+<span class="text-[10px] font-bold text-white">1</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="text-base font-bold text-gray-900 dark:text-white truncate">Sarah Jenkins</h3>
+<span class="text-xs font-medium text-primary">2m ago</span>
+</div>
+<p class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">Hey! Are you going to the psych lecture?</p>
+</div>
+<div class="size-2 rounded-full bg-primary shrink-0 self-center"></div>
+</div>
+<!-- Unread Message 2 -->
+<div class="glass-panel unread-glow p-4 rounded-2xl flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="relative shrink-0">
+<div class="size-14 rounded-full bg-cover bg-center avatar-float" data-alt="Portrait of a young man looking at camera" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYDyMRugIUBUsjqx4dT4qh7Dz-bNK09oCiUBK28dZT7T7IncEpXh-nqXikzd05iAmOKl-iWrhXlBvcKM4nPY4GAXD0gqJPZIS5Nxhpviye4DaV8PlbgXTh41Q7KbmWVU29fLnxsUB8mIdoAAXECx7Kx9VHg5hkThTJvW_KAdEViUAWOoiJWKUY2zEu6UUZnLPKD0FGHcdUeodUt11K4ZxmNP-H5SXC7nxieuh9QOg1PdkPu02NU8KOQg01KKfEzjY92vr-VIOzkybx')"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="text-base font-bold text-gray-900 dark:text-white truncate">Psychology 101 Group</h3>
+<span class="text-xs font-medium text-primary">15m ago</span>
+</div>
+<p class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate"><span class="font-bold text-gray-900 dark:text-white">Alex:</span> Does anyone have the syllabus?</p>
+</div>
+<div class="size-2 rounded-full bg-primary shrink-0 self-center"></div>
+</div>
+<!-- Read Message 1 -->
+<div class="glass-panel p-4 rounded-2xl flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="relative shrink-0">
+<div class="size-14 rounded-full bg-cover bg-center avatar-float grayscale-[20%]" data-alt="Portrait of a man in a white shirt" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCgDN5UfjL0CyqYxxrxjJyC06l40uJjnqmt83maE6Q1fq2sAtw6Pyxe5ijeGPco6sNFEQb8eiNO9K2IfFjsKE9WR4_KMey4Ppz1Ub9vhJhtWdE9fbPT9-T3G92lPgmkbu3w5IzWKViFQTmMolPdqYs9rwrPdd-rZqj36wiRkoqX19NDi_VDltfwhExvhIm6c4tokPXhTcwVBVk_jqgU9ZstW-VP9HSLvU6-KOFduHYqysGTttY7W8R_J8rpqEoggY5Obe78qgGfxpe-')"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="text-base font-semibold text-gray-900 dark:text-white truncate">David Chen</h3>
+<span class="text-xs text-gray-400">1h ago</span>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 truncate">Thanks for the notes! Really appreciate it.</p>
+</div>
+</div>
+<!-- Read Message 2 -->
+<div class="glass-panel p-4 rounded-2xl flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="relative shrink-0">
+<div class="size-14 rounded-full bg-cover bg-center avatar-float grayscale-[20%]" data-alt="Portrait of a professional woman" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBvDpAzKHyCVxTxKO87C2kKNjYg-vrxYX_2LHjxw1e9f6d7qkcE8oV6Uuq1xY5qGOZurNWwG6bymY2MAfh8uWOJzo2PQkYu7_BvvRaGRoZwHu3e3N5Gi_EqDACKMup5e8fniS323lYLkDBbkAc0Z_AOzmrg4shCzae6oqRX1XnAT1RXsS88AinbnujJWCH2ei8l-OwA87rc3DDPa6Fn59cUulsW-eWehTh_MWcvr45RuLvj8FqkXvMLbCj2EXxpGZhb26uVeW4p5-Ch')"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="text-base font-semibold text-gray-900 dark:text-white truncate">UniFinder Team</h3>
+<span class="text-xs text-gray-400">2d ago</span>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 truncate">Welcome to campus! Here are 5 tips to get started.</p>
+</div>
+</div>
+<!-- Read Message 3 -->
+<div class="glass-panel p-4 rounded-2xl flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="relative shrink-0">
+<div class="size-14 rounded-full bg-cover bg-center avatar-float grayscale-[20%]" data-alt="Portrait of a woman with curly hair" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCIDkDRm7N7oX-kau5TxNB6-6qF-VuDzu3pnQO4fC2AOXlGWoDgWnNG9BaZWy3j6GtUEG7OD4Ji_d2xMecETVXsmfFwgKr6TQT0om5RgYQvTMq_tQeZxWLchGiGNPKWOMxqpk3XSW1ACOPE9-yFr-KoLbVgUXT-8v0r_6tbzTbbHYPfI1J5YMGUFsjs0cIjkHOrUrJFn1S6yb1kq2i_LLFoI6ZE21UuhVEjJAKAT6RWXdqYLnjdr_t-UDzO_TbGFu87IXcMNUGvdUk1')"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="text-base font-semibold text-gray-900 dark:text-white truncate">Jessica Wong</h3>
+<span class="text-xs text-gray-400">3d ago</span>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 truncate">Sent a photo.</p>
+</div>
+</div>
+<!-- Read Message 4 -->
+<div class="glass-panel p-4 rounded-2xl flex items-center gap-4 transition-transform active:scale-[0.98]">
+<div class="relative shrink-0">
+<div class="size-14 rounded-full bg-cover bg-center avatar-float grayscale-[20%]" data-alt="Portrait of a young man smiling" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLVGlucYn-LNpxgvI5PHn9kOJekKB7OI06I15DFATLi649FnVDJd-8bCiHBB_uO9tfw5TWdAAcDwS-juGjpPY237FLacwn2OsGPurfjOMah6wnhraM8l0bwhnJufxd9tDV4BICiCBp1FBOhJiMcx4exW9WWfIjJYzjEjymMP5PzmE0xpgaUhICPhS3Xn1rtrWR14W_VU3TeX4GhMf8IieZQllTQnO7sq9iAX4izowf8tEyDCDSWcmjKc9gUx1I4QbRm9gup6K4bNQY')"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h3 class="text-base font-semibold text-gray-900 dark:text-white truncate">Mike Ross</h3>
+<span class="text-xs text-gray-400">1w ago</span>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 truncate">Did you catch the game last night?</p>
+</div>
+</div>
+<!-- Bottom Spacer for visual comfort -->
+<div class="h-8"></div>
+</main>
+<!-- Bottom Navigation Bar (Glassmorphism) -->
+<nav class="fixed bottom-0 w-full glass-nav z-30 pb-safe pt-2">
+<div class="flex justify-around items-center h-16 max-w-lg mx-auto px-2">
+<!-- Discover -->
+<button class="flex flex-col items-center justify-center w-16 h-full gap-1 group">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors text-[28px]">explore</span>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-primary transition-colors">Discover</span>
+</button>
+<!-- Messages (Active) -->
+<button class="flex flex-col items-center justify-center w-16 h-full gap-1 group relative">
+<div class="absolute -top-1 bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary fill-current text-[28px]" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+</div>
+<span class="text-[10px] font-medium text-primary mt-10">Messages</span>
+</button>
+<!-- Profile -->
+<button class="flex flex-col items-center justify-center w-16 h-full gap-1 group">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors text-[28px]">person</span>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-primary transition-colors">Profile</span>
+</button>
+<!-- Notifications -->
+<button class="flex flex-col items-center justify-center w-16 h-full gap-1 group">
+<div class="relative">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors text-[28px]">notifications</span>
+<div class="absolute top-0 right-0 size-2 bg-red-500 rounded-full border border-white dark:border-background-dark"></div>
+</div>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-primary transition-colors">Alerts</span>
+</button>
+</div>
+<!-- Safe area for iPhone home indicator -->
+<div class="h-5 w-full"></div>
+</nav>
+<!-- Background Decoration (Optional subtle gradient blobs for vibrancy under frosted glass) -->
+<div class="fixed top-20 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+<div class="fixed bottom-32 left-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+</body></html>

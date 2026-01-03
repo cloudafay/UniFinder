@@ -1,0 +1,13 @@
+﻿node_modules/expo/tsconfig.base.json(10,15): error TS6046: Argument for '--module' option must be: 'none', 'commonjs', 'amd', 'system', 'umd', 'es6', 'es2015', 'es2020', 'es2022', 'esnext', 'node16', 'nodenext'.
+App.tsx(55,11): error TS2353: Object literal may only specify known properties, and 'Register' does not exist in type 'PathConfigMap<{ Splash: any; } & { Login: any; } & { RegisterBasicInfo: any; } & { RegisterPhoto: any; } & { RegisterInterest: any; } & { ForgotPassword: any; } & { EmailVerification: any; } & { Splash: any; } & { ...; } & ... 4 more ... & { ...; }>'.
+App.tsx(63,11): error TS2353: Object literal may only specify known properties, and 'Groups' does not exist in type 'PathConfigMap<{ Discover: any; } & { Messages: any; } & { Profile: any; } & { Events: any; } & { Discover: any; } & { Messages: any; } & { Profile: any; } & { Events: any; }>'.
+src/screens/Chat/ChatScreen.tsx(551,94): error TS2339: Property 'shiftKey' does not exist on type 'TextInputKeyPressEventData'.
+src/screens/Events/EventDetailScreen.tsx(149,52): error TS18048: 'event.capacity' is possibly 'undefined'.
+src/services/pushNotificationService.ts(20,39): error TS2322: Type 'Promise<{ shouldShowAlert: true; shouldPlaySound: true; shouldSetBadge: true; }>' is not assignable to type 'Promise<NotificationBehavior>'.
+  Type '{ shouldShowAlert: true; shouldPlaySound: true; shouldSetBadge: true; }' is missing the following properties from type 'NotificationBehavior': shouldShowBanner, shouldShowList
+src/services/pushNotificationService.ts(240,23): error TS2339: Property 'removeNotificationSubscription' does not exist on type 'typeof import("C:/Users/baboa/OneDrive/Desktop/\u00DCniFinder/unifinder-app/node_modules/expo-notifications/build/index")'.
+src/services/pushNotificationService.ts(241,23): error TS2339: Property 'removeNotificationSubscription' does not exist on type 'typeof import("C:/Users/baboa/OneDrive/Desktop/\u00DCniFinder/unifinder-app/node_modules/expo-notifications/build/index")'.
+src/services/storyReactionService.ts(152,5): error TS2322: Type '{ id: any; story_id: any; reactor_id: any; emoji: any; created_at: any; reactor: { id: any; full_name: any; avatar_url: any; }[]; }[]' is not assignable to type 'StoryReaction[]'.
+  Type '{ id: any; story_id: any; reactor_id: any; emoji: any; created_at: any; reactor: { id: any; full_name: any; avatar_url: any; }[]; }' is not assignable to type 'StoryReaction'.
+    Types of property 'reactor' are incompatible.
+      Type '{ id: any; full_name: any; avatar_url: any; }[]' is missing the following properties from type '{ id: string; full_name: string; avatar_url: string | null; }': id, full_name, avatar_url

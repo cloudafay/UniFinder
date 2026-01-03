@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder - Discover</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .glass-button {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.2s ease;
+        }
+        .glass-button:active {
+            transform: scale(0.95);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white h-screen overflow-hidden select-none">
+<div class="relative h-full w-full flex flex-col group/design-root">
+<!-- Ambient Background -->
+<!-- Using a blurred campus-like image to create the soft gradient effect -->
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute inset-0 bg-cover bg-center blur-[60px] opacity-60 scale-110" data-alt="Blurred abstract university campus background with greenery and brick tones" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCa2mBLOra-hQrIqjdY8W7NDH_D7WnxpWPb9woxdEMVsmGAkmZ0Wok8i6NmXTr0uQAouIabVxpuVUDPRvXR3YTIef6uUBMF9fTJoYA8dQ5GeESrOMqgImdy2Os3VLUcNF_LbvkRmjCybV64rWxkTmoxetgHpCTXbH-pC-1CCeI-Fp58utNWQD-9OubWMC7Wvsc56cxhrrnDC5PYqA06f7n8mxaJyupSO3vVFymSO2pOUsBcVMNMt6Vm3eb083ZNdpzt8oDDGDs4DNM9');">
+</div>
+<div class="absolute inset-0 bg-gradient-to-b from-background-light/40 via-transparent to-background-light/90 dark:from-background-dark/40 dark:to-background-dark/90"></div>
+</div>
+<!-- Top Bar -->
+<header class="relative z-20 flex items-center justify-between px-6 pt-12 pb-2">
+<div class="flex items-center gap-2">
+<div class="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[24px]">school</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-slate-800 dark:text-white">UniFinder</h1>
+</div>
+<button class="glass-button size-12 rounded-full flex items-center justify-center text-slate-700 dark:text-white shadow-sm">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</header>
+<!-- Main Swipe Area -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-4 pb-24 pt-4">
+<!-- Profile Card -->
+<div class="relative w-full aspect-[3/4.2] rounded-lg shadow-2xl overflow-hidden group cursor-pointer transform transition-transform duration-300 hover:scale-[1.02]">
+<!-- User Photo -->
+<img alt="Portrait of Sarah smiling in a casual outdoor setting" class="absolute inset-0 w-full h-full object-cover" data-alt="Portrait of a female university student smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0RE-zwLw_RX6lJu9EK7XfQIRVVrgug8xxWnArkwYBbapZ6eL3M0Kojuc1WpLiyMionoXf_Y7rqjqRgixd--j2T_5sHaTBT-QRLWqVWts4CVQEK7dhzMNvnoQXas2Vvm2AufvrEA1zsUIurZLq3q_lfQTK_H_12uJVtAUAUqjpP2WrGK1ysJ6tRHPMrTD0_A3-yw40CNDfqPSdqKs1oYCnr88DH0LpMgQX2D0X-pYIglCTQ4fyQhZYUS2JmhOccc5hddhbrWgW4IUG"/>
+<!-- Gradient overlay for text readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80"></div>
+<!-- Glass Info Panel -->
+<div class="absolute bottom-4 left-4 right-4 glass-panel rounded-lg p-5 flex flex-col gap-3">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-baseline justify-between">
+<h2 class="text-2xl font-bold text-white tracking-tight">Sarah, 21</h2>
+<span class="px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30 text-green-100 text-xs font-medium backdrop-blur-md flex items-center gap-1">
+<span class="size-2 rounded-full bg-green-400 animate-pulse"></span> Active
+                            </span>
+</div>
+<p class="text-white/90 text-sm font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary/80">school</span>
+                            B.S. Psychology
+                        </p>
+</div>
+<!-- Tags -->
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 rounded-full bg-white/20 text-white text-xs font-medium border border-white/10 backdrop-blur-sm">Photography</span>
+<span class="px-3 py-1.5 rounded-full bg-white/20 text-white text-xs font-medium border border-white/10 backdrop-blur-sm">Coffee</span>
+<span class="px-3 py-1.5 rounded-full bg-white/20 text-white text-xs font-medium border border-white/10 backdrop-blur-sm">Study Groups</span>
+</div>
+</div>
+</div>
+<!-- Floating Action Buttons -->
+<div class="flex items-center gap-6 mt-6">
+<!-- Pass Button -->
+<button class="size-16 rounded-full glass-button bg-white/40 text-rose-500 shadow-lg hover:bg-white flex items-center justify-center group/btn">
+<span class="material-symbols-outlined text-[32px] transition-transform group-hover/btn:scale-110">close</span>
+</button>
+<!-- Super Like Button -->
+<button class="size-12 rounded-full bg-sky-400/20 border border-sky-400/30 text-sky-600 dark:text-sky-300 shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.5)] flex items-center justify-center backdrop-blur-md transition-all group/btn hover:-translate-y-1">
+<span class="material-symbols-outlined text-[28px] transition-transform group-hover/btn:scale-110" data-weight="fill">star</span>
+</button>
+<!-- Like Button -->
+<button class="size-16 rounded-full bg-primary text-white shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:bg-primary/90 flex items-center justify-center transition-all group/btn hover:-translate-y-1">
+<span class="material-symbols-outlined text-[32px] transition-transform group-hover/btn:scale-110" data-weight="fill">favorite</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 glass-panel border-t border-white/40 pb-6 pt-3 px-6 rounded-t-lg">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<a class="flex flex-col items-center gap-1 text-primary w-16" href="#">
+<div class="relative">
+<span class="material-symbols-outlined text-[28px]" data-weight="fill">style</span> <!-- Using 'style' icon for cards/discover -->
+<span class="absolute top-0 right-0 size-2 bg-primary rounded-full"></span>
+</div>
+<span class="text-[10px] font-bold">Discover</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors w-16" href="#">
+<div class="relative">
+<span class="material-symbols-outlined text-[28px]">chat_bubble</span>
+</div>
+<span class="text-[10px] font-medium">Messages</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors w-16" href="#">
+<span class="material-symbols-outlined text-[28px]">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors w-16" href="#">
+<div class="relative">
+<span class="material-symbols-outlined text-[28px]">notifications</span>
+<!-- Notification Badge -->
+<span class="absolute -top-0.5 right-0.5 size-2.5 bg-rose-500 rounded-full border border-white dark:border-slate-900"></span>
+</div>
+<span class="text-[10px] font-medium">Alerts</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

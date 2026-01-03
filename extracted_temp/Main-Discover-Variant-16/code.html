@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniFinder - Discover</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "3xl": "2.5rem", "full": "9999px"},
+                    backgroundImage: {
+                        'glass-gradient': 'linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.00) 100%)',
+                        'card-gradient': 'linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hide for cleaner UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden h-screen w-full relative selection:bg-primary selection:text-white">
+<!-- Immersive Background with abstract shapes/blur -->
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<!-- Abstract gradient blob 1 -->
+<div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] opacity-40 mix-blend-screen"></div>
+<!-- Abstract gradient blob 2 -->
+<div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[100px] opacity-30 mix-blend-screen"></div>
+<!-- Noise texture overlay for glass realism -->
+<div class="absolute inset-0 opacity-[0.03]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBojbHoVCGKLbFLhv7P4aSWO42TadAyvM07uGBqqJh6qerMp0pCuCwjyiQ8KHaq4r-Dmx-BF-IlBL2tYwYkBXm8GPlBKUbXniUppdFErLIHU5Ti0W28KSmQ2OXApf-9hLfr4CaepxlKD9t1-2C2gMYK3XPvnBaoEoCidD8ZdKlhWX0mFGKossaB6NdScxJQYgUPh-FTILR8uPylKbWf2uwqbskQsAM1_2siqSkCLR0GUv6L5dQ05EnXNqOd-Hpu0axKjlGKdObejuFm');"></div>
+</div>
+<!-- Main Container -->
+<div class="relative z-10 flex flex-col h-full w-full max-w-md mx-auto">
+<!-- Top App Bar -->
+<div class="flex items-center justify-between px-6 pt-12 pb-2 shrink-0">
+<button class="flex items-center justify-center size-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/80 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+<h1 class="text-xl font-bold tracking-tight text-white drop-shadow-sm">UniFinder</h1>
+<button class="flex items-center justify-center size-10 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30 text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px] filled">shield</span>
+</button>
+</div>
+<!-- Main Content Area: Floating Card -->
+<div class="flex-1 w-full px-4 py-4 flex flex-col items-center justify-center relative perspective-1000">
+<!-- Floating Glass Profile Card -->
+<div class="relative w-full h-full max-h-[65vh] rounded-[32px] overflow-hidden shadow-2xl shadow-black/50 border border-white/10 bg-gray-900 group">
+<!-- Profile Image -->
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Portrait of a female university student smiling outdoors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB65M8EJHpsca1l-eBVd7wPxrig16UKN2V64iJ9vNQBvyGWoB6SPXzwKut7tueZ6RsPRiGbM5KcYBVEKKJtbVk5EM8NckY8ilMa-_xaRT6VwadZdp-eqK08dmJLfOnEQYOHgHzKEQinMwiKWnOVDUPuoDLeWUG-MHKwnJVbrSEL-XWttwhz6P1YrDQOP9BS_UCwoZozDcNYQMfCVj2AZYt5QycQ_W6g1FQ5oWp2aIetJKKyPxSSQeU_3Kvp4LlQLrWBZx1APFpX6jLq"/>
+<!-- Match Affinity Badge (Floating Top Right) -->
+<div class="absolute top-4 right-4 flex items-center justify-center size-14 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg">
+<svg class="size-14 -rotate-90 absolute" viewbox="0 0 36 36">
+<path class="text-white/10" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary drop-shadow-[0_0_4px_rgba(19,55,236,0.8)]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="95, 100" stroke-width="3"></path>
+</svg>
+<span class="text-xs font-bold text-white relative z-10">95%</span>
+</div>
+<!-- Info Overlay Gradient -->
+<div class="absolute inset-x-0 bottom-0 pt-32 pb-6 px-6 bg-card-gradient flex flex-col justify-end gap-3">
+<!-- Glass Capsules / Chips -->
+<div class="flex flex-wrap gap-2 mb-1">
+<div class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-lg border border-white/20 flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-white">school</span>
+<span class="text-[11px] font-semibold text-white tracking-wide uppercase">Sophomore</span>
+</div>
+<div class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-lg border border-white/20 flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-white">code</span>
+<span class="text-[11px] font-semibold text-white tracking-wide uppercase">Comp Sci</span>
+</div>
+<div class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-lg border border-white/20 flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-white">location_on</span>
+<span class="text-[11px] font-semibold text-white tracking-wide uppercase">UCLA</span>
+</div>
+</div>
+<!-- Name & Age -->
+<div class="flex items-center gap-2">
+<h2 class="text-3xl font-bold text-white leading-tight">Sarah, 21</h2>
+<div class="flex items-center justify-center size-6 rounded-full bg-blue-500 text-white" title="Verified Student">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+<!-- Bio Snippet -->
+<p class="text-white/80 text-sm font-medium leading-relaxed line-clamp-2 drop-shadow-sm">
+                        Coffee addict &amp; coding enthusiast looking for study buddies! Let's debug life together ☕️
+                    </p>
+</div>
+</div>
+<!-- Detached Action Dock (Floating below card) -->
+<div class="absolute -bottom-8 w-full flex justify-center z-20">
+<div class="flex items-center gap-6 px-8 py-3 rounded-full bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+<!-- Pass -->
+<button class="group flex items-center justify-center size-14 rounded-full bg-transparent border border-white/10 hover:bg-red-500/20 hover:border-red-500/50 transition-all duration-300">
+<span class="material-symbols-outlined text-3xl text-red-400 group-hover:text-red-500 group-hover:scale-110 transition-transform">close</span>
+</button>
+<!-- Super Like -->
+<button class="group flex items-center justify-center size-12 rounded-full bg-transparent border border-white/10 hover:bg-yellow-500/20 hover:border-yellow-500/50 transition-all duration-300 -mt-2">
+<span class="material-symbols-outlined text-2xl text-yellow-400 group-hover:text-yellow-500 group-hover:scale-110 transition-transform fill-1">star</span>
+</button>
+<!-- Connect -->
+<button class="group flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-[0_0_15px_rgba(19,55,236,0.5)] hover:bg-primary/90 hover:shadow-[0_0_25px_rgba(19,55,236,0.7)] hover:scale-105 transition-all duration-300 border border-white/10">
+<span class="material-symbols-outlined text-3xl transition-transform group-hover:animate-pulse">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Spacer for Layout Balance -->
+<div class="h-20 shrink-0"></div>
+<!-- Suspended Glass Tab Bar -->
+<div class="absolute bottom-6 left-4 right-4 h-[72px] rounded-[24px] bg-[#191e33]/70 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center justify-around px-2 z-30">
+<a class="flex flex-col items-center justify-center gap-1 w-16 h-full group" href="#">
+<div class="relative flex items-center justify-center size-10 rounded-xl bg-primary/20 text-primary transition-all duration-300 shadow-[0_0_10px_rgba(19,55,236,0.3)]">
+<span class="material-symbols-outlined text-[24px]">explore</span>
+</div>
+<span class="text-[10px] font-semibold text-primary">Discover</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-16 h-full group" href="#">
+<div class="flex items-center justify-center size-10 rounded-xl text-[#929bc9] group-hover:text-white group-hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined text-[24px]">chat_bubble</span>
+</div>
+<span class="text-[10px] font-medium text-[#929bc9] group-hover:text-white transition-colors">Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-16 h-full group" href="#">
+<div class="flex items-center justify-center size-10 rounded-xl text-[#929bc9] group-hover:text-white group-hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined text-[24px]">person</span>
+</div>
+<span class="text-[10px] font-medium text-[#929bc9] group-hover:text-white transition-colors">Profile</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-16 h-full group relative" href="#">
+<div class="flex items-center justify-center size-10 rounded-xl text-[#929bc9] group-hover:text-white group-hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+</div>
+<span class="text-[10px] font-medium text-[#929bc9] group-hover:text-white transition-colors">Notifications</span>
+<!-- Notification Dot -->
+<span class="absolute top-3 right-4 size-2 rounded-full bg-red-500 border border-[#191e33]"></span>
+</a>
+</div>
+</div>
+</body></html>
