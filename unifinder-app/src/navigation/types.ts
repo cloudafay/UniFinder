@@ -129,6 +129,7 @@ export type RootStackParamList = {
   GroupChat: { groupId: string; groupName: string };
   CreateGroup: undefined;
   GroupMembers: { groupId: string; groupName: string };
+  GroupSettings: { groupId: string; groupName: string };
   
   // Profile Enhancements
   ProfilePreview: undefined;

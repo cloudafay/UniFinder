@@ -1,6 +1,8 @@
 // UniFinder Theme Configuration
 // Tasarım dosyalarından çıkarılan tema ayarları
 
+import { Platform } from 'react-native';
+
 export const Theme = {
   // Font Family
   fonts: {
@@ -59,43 +61,68 @@ export const Theme = {
     16: 64,
   },
 
-  // Shadows
+  // Shadows - Platform aware
   shadows: {
-    sm: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.05,
-      shadowRadius: 4,
-      elevation: 2,
-    },
-    md: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 4,
-    },
-    lg: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.15,
-      shadowRadius: 16,
-      elevation: 8,
-    },
-    xl: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.2,
-      shadowRadius: 32,
-      elevation: 12,
-    },
-    primary: {
-      shadowColor: '#1337ec',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.39,
-      shadowRadius: 14,
-      elevation: 8,
-    },
+    sm: Platform.select({
+      web: {
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
+    md: Platform.select({
+      web: {
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
+    lg: Platform.select({
+      web: {
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 16,
+        elevation: 8,
+      },
+    }),
+    xl: Platform.select({
+      web: {
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 32,
+        elevation: 12,
+      },
+    }),
+    primary: Platform.select({
+      web: {
+        boxShadow: '0 4px 14px rgba(99, 102, 241, 0.39)',
+      },
+      default: {
+        shadowColor: '#6366F1',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.39,
+        shadowRadius: 14,
+        elevation: 8,
+      },
+    }),
   },
 
   // Glass Effect Styles

@@ -230,6 +230,8 @@ export const groupChatService = {
 
   // Üye ekle
   addMember: async (groupId: string, userId: string, addedBy: string): Promise<{ error: any }> => {
+    console.log('🔵 addMember başladı - groupId:', groupId, 'userId:', userId);
+    
     // Kapasite kontrolü
     const { data: group } = await supabase
       .from('group_chats')
@@ -250,22 +252,21 @@ export const groupChatService = {
         role: 'member',
       });
 
+    console.log('🔵 Üye ekleme sonucu:', { error });
+
     if (!error) {
-      // Sistem mesajı
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', userId)
-        .single();
+      // member_count'u güncelle
+      const { count: newCount } = await supabase
+        .from('group_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('group_id', groupId);
 
       await supabase
-        .from('group_messages')
-        .insert({
-          group_id: groupId,
-          sender_id: null,
-          content: `${profile?.full_name || 'Biri'} gruba katıldı`,
-          message_type: 'system',
-        });
+        .from('group_chats')
+        .update({ member_count: newCount || 0 })
+        .eq('id', groupId);
+
+      console.log('✅ Üye ekleme başarılı');
     }
 
     return { error };
@@ -273,6 +274,8 @@ export const groupChatService = {
 
   // Üye çıkar (admin)
   removeMember: async (groupId: string, userId: string, removedBy: string): Promise<{ error: any }> => {
+    console.log('🔵 removeMember başladı - groupId:', groupId, 'userId:', userId);
+    
     // Admin kontrolü
     const { data: remover } = await supabase
       .from('group_members')
@@ -285,28 +288,28 @@ export const groupChatService = {
       return { error: { message: 'Bu işlem için admin yetkisi gerekli' } };
     }
 
+    // Üyeyi sil
     const { error } = await supabase
       .from('group_members')
       .delete()
       .eq('group_id', groupId)
       .eq('user_id', userId);
 
+    console.log('🔵 Üye silme sonucu:', { error });
+
     if (!error) {
-      // Sistem mesajı
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', userId)
-        .single();
+      // member_count'u güncelle
+      const { count: newCount } = await supabase
+        .from('group_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('group_id', groupId);
 
       await supabase
-        .from('group_messages')
-        .insert({
-          group_id: groupId,
-          sender_id: null,
-          content: `${profile?.full_name || 'Biri'} gruptan çıkarıldı`,
-          message_type: 'system',
-        });
+        .from('group_chats')
+        .update({ member_count: newCount || 0 })
+        .eq('id', groupId);
+
+      console.log('✅ Üye çıkarma başarılı');
     }
 
     return { error };
@@ -314,6 +317,8 @@ export const groupChatService = {
 
   // Gruptan ayrıl
   leaveGroup: async (groupId: string, userId: string): Promise<{ error: any }> => {
+    console.log('🔵 leaveGroup başladı - groupId:', groupId, 'userId:', userId);
+    
     // Admin kontrolü - son admin ayrılamaz
     const { data: member } = await supabase
       .from('group_members')
@@ -322,6 +327,8 @@ export const groupChatService = {
       .eq('user_id', userId)
       .single();
 
+    console.log('🔵 Kullanıcı rolü:', member?.role);
+
     if (member?.role === 'admin') {
       const { count } = await supabase
         .from('group_members')
@@ -329,33 +336,42 @@ export const groupChatService = {
         .eq('group_id', groupId)
         .eq('role', 'admin');
 
+      console.log('🔵 Toplam admin sayısı:', count);
+
       if (count === 1) {
-        return { error: { message: 'Son admin gruptan ayrılamaz. Önce başka birini admin yapın.' } };
+        return { error: { message: 'Son admin gruptan ayrılamaz. Önce başka birini admin yapın veya grubu silin.' } };
       }
     }
 
+    // Kullanıcı adını al (mesaj için)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', userId)
+      .single();
+
+    // Üyelikten çıkar
     const { error } = await supabase
       .from('group_members')
       .delete()
       .eq('group_id', groupId)
       .eq('user_id', userId);
 
+    console.log('🔵 Üyelik silme sonucu:', { error });
+
     if (!error) {
-      // Sistem mesajı
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', userId)
-        .single();
+      // member_count'u güncelle
+      const { count: newCount } = await supabase
+        .from('group_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('group_id', groupId);
 
       await supabase
-        .from('group_messages')
-        .insert({
-          group_id: groupId,
-          sender_id: null,
-          content: `${profile?.full_name || 'Biri'} gruptan ayrıldı`,
-          message_type: 'system',
-        });
+        .from('group_chats')
+        .update({ member_count: newCount || 0 })
+        .eq('id', groupId);
+
+      console.log('✅ Gruptan ayrılma başarılı');
     }
 
     return { error };
@@ -408,6 +424,8 @@ export const groupChatService = {
 
   // Grubu sil
   deleteGroup: async (groupId: string, userId: string): Promise<{ error: any }> => {
+    console.log('🔵 deleteGroup başladı - groupId:', groupId, 'userId:', userId);
+    
     // Admin kontrolü
     const { data: member } = await supabase
       .from('group_members')
@@ -416,14 +434,39 @@ export const groupChatService = {
       .eq('user_id', userId)
       .single();
 
+    console.log('🔵 Kullanıcı rolü:', member?.role);
+
     if (!member || member.role !== 'admin') {
       return { error: { message: 'Bu işlem için admin yetkisi gerekli' } };
     }
 
+    // Önce grup mesajlarını sil
+    const { error: messagesError } = await supabase
+      .from('group_messages')
+      .delete()
+      .eq('group_id', groupId);
+    
+    console.log('🔵 Mesajlar silme sonucu:', { messagesError });
+
+    // Sonra grup üyelerini sil
+    const { error: membersError } = await supabase
+      .from('group_members')
+      .delete()
+      .eq('group_id', groupId);
+
+    console.log('🔵 Üyeler silme sonucu:', { membersError });
+
+    // En son grubu sil
     const { error } = await supabase
       .from('group_chats')
       .delete()
       .eq('id', groupId);
+
+    console.log('🔵 Grup silme sonucu:', { error });
+
+    if (!error) {
+      console.log('✅ Grup başarıyla silindi');
+    }
 
     return { error };
   },

@@ -32,7 +32,7 @@ interface NotificationProviderProps {
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const navigation = useNavigation<any>();
-  
+
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -44,14 +44,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
     try {
       const token = await pushNotificationService.registerForPushNotificationsAsync();
-      
+
       if (token) {
         setExpoPushToken(token);
-        
+
         // Token'ı Supabase'e kaydet
         const saved = await pushNotificationService.savePushToken(user.id, token);
         setIsRegistered(saved);
-        
+
         console.log('Push notification registered:', { token, saved });
       }
     } catch (error) {
@@ -62,7 +62,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   // Bildirime tıklandığında yönlendirme
   const handleNotificationResponse = useCallback((response: Notifications.NotificationResponse) => {
     const data = response.notification.request.content.data;
-    
+
     console.log('Notification tapped:', data);
 
     // Bildirim tipine göre yönlendir
@@ -101,9 +101,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
   // Notification listener'ları ekle
   useEffect(() => {
-    // Web veya Expo Go'da listener ekleme
-    if (isWeb || isExpoGo) return () => {};
-    
+    // Web'de listener ekleme - TAMAMEN ATLIYORUZ
+    if (isWeb) return;
+
     const cleanup = pushNotificationService.addNotificationListeners(
       handleNotificationReceived,
       handleNotificationResponse
