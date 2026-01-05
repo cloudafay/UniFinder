@@ -33,7 +33,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ error?: string }>;
   register: (data: RegisterData) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
-  updateUser: (userData: Partial<User>) => void;
+  updateUser: (userData: Partial<User>) => Promise<{ error?: string }>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -420,9 +420,129 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateUser = (userData: Partial<User>) => {
-    if (user) {
-      setUser({ ...user, ...userData });
+  const updateUser = async (userData: Partial<User>): Promise<{ error?: string }> => {
+    if (!user || !session) {
+      return { error: 'Kullanıcı oturumu bulunamadı' };
+    }
+
+    try {
+      console.log('📝 updateUser called with:', userData);
+      
+      // Fotoğrafları Storage'a yükle (eğer yerel URI ise)
+      let uploadedPhotos: string[] = [];
+      if (userData.photos && userData.photos.length > 0) {
+        console.log('📸 Uploading photos...', userData.photos.length);
+        
+        for (let i = 0; i < userData.photos.length; i++) {
+          const photoUri = userData.photos[i];
+          
+          // Zaten Supabase URL'i ise yükleme yapma
+          if (photoUri.includes('supabase.co')) {
+            console.log(`📸 Photo ${i} already uploaded:`, photoUri.substring(0, 50));
+            uploadedPhotos.push(photoUri);
+            continue;
+          }
+          
+          // Yerel dosyayı yükle
+          try {
+            console.log(`📸 Uploading photo ${i}:`, photoUri.substring(0, 50));
+            const fileName = `${user.id}/photo_${i}_${Date.now()}.jpg`;
+            
+            const response = await fetch(photoUri);
+            const blob = await response.blob();
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
+              .from('photos')
+              .upload(fileName, blob, {
+                contentType: 'image/jpeg',
+                upsert: true,
+              });
+            
+            if (uploadError) {
+              console.error(`❌ Photo ${i} upload error:`, uploadError);
+              // Hata olsa bile devam et, yerel URI'yi kullanma
+              continue;
+            }
+            
+            const { data: { publicUrl } } = supabase.storage
+              .from('photos')
+              .getPublicUrl(fileName);
+            
+            console.log(`✅ Photo ${i} uploaded:`, publicUrl.substring(0, 50));
+            uploadedPhotos.push(publicUrl);
+          } catch (err) {
+            console.error(`❌ Photo ${i} upload exception:`, err);
+          }
+        }
+      }
+
+      // Avatar URL'i ayarla
+      let avatarUrl = userData.avatarUrl;
+      if (avatarUrl && !avatarUrl.includes('supabase.co') && !avatarUrl.includes('ui-avatars.com')) {
+        // Avatar'ı da yükle
+        try {
+          const fileName = `${user.id}/avatar_${Date.now()}.jpg`;
+          const response = await fetch(avatarUrl);
+          const blob = await response.blob();
+          
+          const { error: avatarError } = await supabase.storage
+            .from('photos')
+            .upload(fileName, blob, {
+              contentType: 'image/jpeg',
+              upsert: true,
+            });
+          
+          if (!avatarError) {
+            const { data: { publicUrl } } = supabase.storage
+              .from('photos')
+              .getPublicUrl(fileName);
+            avatarUrl = publicUrl;
+            console.log('✅ Avatar uploaded:', avatarUrl.substring(0, 50));
+          }
+        } catch (err) {
+          console.error('❌ Avatar upload error:', err);
+        }
+      }
+
+      // Veritabanını güncelle
+      const updateData: any = {
+        updated_at: new Date().toISOString(),
+      };
+
+      if (userData.fullName) updateData.full_name = userData.fullName;
+      if (userData.bio !== undefined) updateData.bio = userData.bio;
+      if (userData.department) updateData.department = userData.department;
+      if (userData.year) updateData.class_year = userData.year;
+      if (userData.interests) updateData.interests = userData.interests;
+      if (uploadedPhotos.length > 0) updateData.photos = uploadedPhotos;
+      if (avatarUrl) updateData.avatar_url = avatarUrl;
+
+      console.log('💾 Saving to database:', updateData);
+
+      const { error: dbError } = await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('id', user.id);
+
+      if (dbError) {
+        console.error('❌ Database update error:', dbError);
+        return { error: dbError.message };
+      }
+
+      console.log('✅ Profile saved to database');
+
+      // Local state'i güncelle
+      setUser({
+        ...user,
+        ...userData,
+        photos: uploadedPhotos.length > 0 ? uploadedPhotos : (userData.photos || user.photos),
+        avatarUrl: avatarUrl || userData.avatarUrl || user.avatarUrl,
+      });
+
+      return {};
+    } catch (error: any) {
+      console.error('❌ updateUser error:', error);
+      return { error: error.message || 'Profil güncellenirken hata oluştu' };
     }
   };
 

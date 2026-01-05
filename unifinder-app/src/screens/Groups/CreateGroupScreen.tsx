@@ -84,12 +84,13 @@ const CreateGroupScreen: React.FC = () => {
     setIsLoading(true);
     console.log('Creating group with user:', user.id);
     try {
+      // Önce grubu oluştur (fotoğrafsız)
       const { data, error } = await groupChatService.createGroup(user.id, {
         name: name.trim(),
         description: description.trim() || undefined,
         max_members: parseInt(maxMembers) || 50,
         is_public: isPublic,
-        image_url: groupImage || undefined,
+        // Fotoğrafı sonra yükleyeceğiz
       });
 
       console.log('Group creation result:', { data, error });
@@ -97,7 +98,25 @@ const CreateGroupScreen: React.FC = () => {
       if (error) {
         console.error('Group creation error:', error);
         Alert.alert('Hata', typeof error === 'string' ? error : 'Grup oluşturulamadı');
-      } else if (data) {
+        return;
+      }
+      
+      if (data) {
+        // Grup oluşturuldu, şimdi fotoğraf varsa Storage'a yükle
+        if (groupImage) {
+          console.log('Uploading group image to storage...');
+          const { url: uploadedUrl, error: uploadError } = await groupChatService.uploadGroupImage(data.id, groupImage);
+          
+          if (uploadError) {
+            console.warn('Group image upload error (non-critical):', uploadError);
+            // Fotoğraf yükleme başarısız olsa bile grup oluşturuldu
+          } else if (uploadedUrl) {
+            // Grup avatar_url'ini güncelle
+            await groupChatService.updateGroupAvatar(data.id, uploadedUrl);
+            console.log('Group avatar updated:', uploadedUrl);
+          }
+        }
+        
         setCreatedGroup({ id: data.id, name: data.name });
       }
     } catch (error) {

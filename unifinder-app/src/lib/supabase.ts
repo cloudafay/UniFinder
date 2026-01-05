@@ -7,8 +7,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
+// Debug: API key kontrolü
+console.log('🔑 Supabase URL:', supabaseUrl);
+console.log('🔑 Supabase Key uzunluğu:', supabaseAnonKey?.length || 0);
+console.log('🔑 Supabase Key başlangıcı:', supabaseAnonKey?.substring(0, 20) || 'YOK');
+
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase URL ve Anon Key .env dosyasında tanımlanmalıdır!');
+  console.error('❌ Supabase URL ve Anon Key .env dosyasında tanımlanmalıdır!');
+}
+
+if (supabaseAnonKey && supabaseAnonKey.length < 100) {
+  console.error('❌ Supabase Anon Key çok kısa! Doğru key eyJ... ile başlamalı ve ~200+ karakter olmalı');
 }
 
 export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '', {

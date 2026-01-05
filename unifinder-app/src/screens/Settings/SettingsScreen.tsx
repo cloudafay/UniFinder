@@ -376,7 +376,7 @@ const SettingsScreen: React.FC = () => {
               <View style={styles.avatarGlow} />
               <Image
                 source={{
-                  uri: user?.avatarUrl || user?.photos?.[0] || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.fullName || 'U') + '&size=200&background=6366f1&color=fff'
+                  uri: user?.avatarUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.fullName || 'U') + '&size=200&background=6366f1&color=fff'
                 }}
                 style={[styles.avatar, { borderColor: colors.border }]}
               />

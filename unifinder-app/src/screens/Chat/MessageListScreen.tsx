@@ -48,7 +48,15 @@ interface ConversationItemProps {
 const ConversationItem: React.FC<ConversationItemProps> = ({ conversation, onPress }) => (
   <TouchableOpacity style={styles.conversationItem} onPress={onPress} activeOpacity={0.7}>
     <View style={styles.avatarContainer}>
-      <Image source={{ uri: conversation.user.photo }} style={styles.avatar} />
+      {conversation.user.photo ? (
+        <Image source={{ uri: conversation.user.photo }} style={styles.avatar} />
+      ) : (
+        <View style={[styles.avatar, { backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' }]}>
+          <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
+            {conversation.user.name?.charAt(0)?.toUpperCase() || 'U'}
+          </Text>
+        </View>
+      )}
       {conversation.isOnline && <View style={styles.onlineIndicator} />}
     </View>
     <View style={styles.conversationContent}>
@@ -114,64 +122,79 @@ const MessageListScreen: React.FC = () => {
 
   // Eşleşmeleri ve son mesajları yükle
   const loadConversations = useCallback(async () => {
-    if (!user) return;
+    console.log('📬 loadConversations başladı');
+    if (!user) {
+      console.log('⚠️ User yok, loadConversations atlanıyor');
+      return;
+    }
 
     try {
+      console.log('📬 Eşleşmeler ve gruplar yükleniyor - userId:', user.id);
       // Tüm eşleşmeleri al
       const { data: matches, error } = await matchService.getMyMatches(user.id);
 
       if (error) {
         console.error('Eşleşmeler yüklenemedi:', error);
-        return;
+        // Hata olsa bile grupları yüklemeye devam et
       }
 
+      // Eşleşmeler yoksa bile grupları yükle - ERKEN RETURN YAPMA!
       if (!matches || matches.length === 0) {
+        console.log('📬 Eşleşme yok, ama grupları yüklemeye devam ediyorum');
         setConversations([]);
         setNewMatches([]);
-        setLoading(false);
-        return;
+        // GRUPLAR İÇİN DEVAM ET - return YAPMA!
+      } else {
+        // Her eşleşme için son mesajı ve okunmamış sayısını al
+        const conversationPromises = matches.map(async (match: any) => {
+          // Son mesajı al
+          const { data: messages } = await chatService.getMessages(match.id, 1, 0);
+          const lastMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+
+          // Okunmamış mesaj sayısını al
+          const { count: unreadCount } = await chatService.getUnreadCount(match.id, user.id);
+
+          const otherUser = match.otherUser;
+          // Supabase URL'leri veya geçerli http/https URL'lerini kullan, geçersiz URL'leri filtrele
+          const rawPhoto = otherUser?.photos?.[0] || otherUser?.avatar_url;
+          const photoUrl = rawPhoto && (rawPhoto.startsWith('http://') || rawPhoto.startsWith('https://')) ? rawPhoto : undefined;
+
+          return {
+            id: match.id,
+            user: {
+              name: otherUser?.display_name || 'Kullanıcı',
+              photo: photoUrl,
+              department: otherUser?.department || '',
+            },
+            lastMessage: lastMessage?.content || '',
+            time: formatTime(lastMessage?.created_at || match.created_at),
+            unread: unreadCount || 0,
+            isOnline: false, // TODO: Online durumu için realtime gerekli
+            isNewMatch: !lastMessage, // Mesaj yoksa yeni eşleşme
+          } as ConversationType;
+        });
+
+        const allConversations = await Promise.all(conversationPromises);
+
+        // Yeni eşleşmeleri ayır (henüz mesajlaşılmamış)
+        const newOnes = allConversations.filter(c => c.isNewMatch);
+        const withMessages = allConversations.filter(c => !c.isNewMatch);
+
+        setNewMatches(newOnes);
+        setConversations(withMessages);
       }
 
-      // Her eşleşme için son mesajı ve okunmamış sayısını al
-      const conversationPromises = matches.map(async (match: any) => {
-        // Son mesajı al
-        const { data: messages } = await chatService.getMessages(match.id, 1, 0);
-        const lastMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null;
-
-        // Okunmamış mesaj sayısını al
-        const { count: unreadCount } = await chatService.getUnreadCount(match.id, user.id);
-
-        const otherUser = match.otherUser;
-        const photoUrl = otherUser?.photos?.[0] || otherUser?.avatar_url || 'https://via.placeholder.com/100';
-
-        return {
-          id: match.id,
-          user: {
-            name: otherUser?.display_name || 'Kullanıcı',
-            photo: photoUrl,
-            department: otherUser?.department || '',
-          },
-          lastMessage: lastMessage?.content || '',
-          time: formatTime(lastMessage?.created_at || match.created_at),
-          unread: unreadCount || 0,
-          isOnline: false, // TODO: Online durumu için realtime gerekli
-          isNewMatch: !lastMessage, // Mesaj yoksa yeni eşleşme
-        } as ConversationType;
-      });
-
-      const allConversations = await Promise.all(conversationPromises);
-
-      // Yeni eşleşmeleri ayır (henüz mesajlaşılmamış)
-      const newOnes = allConversations.filter(c => c.isNewMatch);
-      const withMessages = allConversations.filter(c => !c.isNewMatch);
-
-      setNewMatches(newOnes);
-      setConversations(withMessages);
-
       // Grupları getir
-      const { data: myGroups } = await groupChatService.getMyGroups(user.id);
+      console.log('🔵 Grupları yüklemeye başlıyorum - userId:', user.id);
+      const { data: myGroups, error: groupsError } = await groupChatService.getMyGroups(user.id);
+      console.log('🔵 getMyGroups sonucu:', { myGroups, groupsError, count: myGroups?.length });
 
-      if (myGroups) {
+      if (groupsError) {
+        console.error('❌ Grup yükleme hatası:', groupsError);
+      }
+
+      if (myGroups && myGroups.length > 0) {
+        console.log('🔵 Gruplar bulundu, detayları yükleniyor...');
         const groupPromises = myGroups.map(async (group) => {
           // Grubun son mesajını al
           const { data: messages } = await groupChatService.getMessages(group.id, 1);
@@ -413,7 +436,15 @@ const MessageListScreen: React.FC = () => {
                     onPress={() => handleConversationPress(item)}
                   >
                     <View style={styles.matchAvatarContainer}>
-                      <Image source={{ uri: item.user.photo }} style={styles.matchAvatar} />
+                      {item.user.photo ? (
+                        <Image source={{ uri: item.user.photo }} style={styles.matchAvatar} />
+                      ) : (
+                        <View style={[styles.matchAvatar, { backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' }]}>
+                          <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                            {item.user.name?.charAt(0)?.toUpperCase() || 'U'}
+                          </Text>
+                        </View>
+                      )}
                       {item.isOnline && <View style={styles.matchOnlineIndicator} />}
                     </View>
                     <Text style={[styles.matchName, { color: colors.textPrimary }]} numberOfLines={1}>
@@ -492,10 +523,18 @@ const MessageListScreen: React.FC = () => {
                   activeOpacity={0.7}
                 >
                   <View style={styles.avatarContainer}>
-                    <Image
-                      source={{ uri: item.avatar_url || 'https://via.placeholder.com/100' }}
-                      style={[styles.avatar, { borderRadius: 16 }]}
-                    />
+                    {item.avatar_url && (item.avatar_url.startsWith('http://') || item.avatar_url.startsWith('https://')) ? (
+                      <Image
+                        source={{ uri: item.avatar_url }}
+                        style={[styles.avatar, { borderRadius: 16 }]}
+                      />
+                    ) : (
+                      <View style={[styles.avatar, { borderRadius: 16, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' }]}>
+                        <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
+                          {item.name?.charAt(0)?.toUpperCase() || 'G'}
+                        </Text>
+                      </View>
+                    )}
                   </View>
                   <View style={styles.conversationContent}>
                     <View style={styles.conversationHeader}>

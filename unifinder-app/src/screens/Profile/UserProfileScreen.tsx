@@ -221,7 +221,7 @@ const UserProfileScreen: React.FC = () => {
                 >
                   <View style={[styles.avatarInner, { backgroundColor: colors.cardBackground }]}>
                     <Image
-                      source={{ uri: user?.avatarUrl || user?.photos?.[0] || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.fullName || 'U') + '&size=200&background=6366f1&color=fff' }}
+                      source={{ uri: user?.avatarUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.fullName || 'U') + '&size=200&background=6366f1&color=fff' }}
                       style={styles.avatar}
                     />
                   </View>
@@ -229,7 +229,7 @@ const UserProfileScreen: React.FC = () => {
               ) : (
                 <View style={[styles.avatarBorder, { borderColor: colors.border }]}>
                   <Image
-                    source={{ uri: user?.avatarUrl || user?.photos?.[0] || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.fullName || 'U') + '&size=200&background=6366f1&color=fff' }}
+                    source={{ uri: user?.avatarUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.fullName || 'U') + '&size=200&background=6366f1&color=fff' }}
                     style={styles.avatar}
                   />
                 </View>

@@ -113,7 +113,7 @@ export const authService = {
           bio: data.bio || null,
           interests: data.interests || [],
           photos: data.photos || [],
-          avatar_url: data.photos && data.photos.length > 0 ? data.photos[0] : null,
+          avatar_url: null, // Avatar ve vitrin fotoğrafları ayrı - kayıt sırasında avatar boş
           is_active: true,
           is_verified: false,
         });

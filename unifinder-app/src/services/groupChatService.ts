@@ -56,6 +56,8 @@ const MAX_GROUP_MEMBERS = 50;
 export const groupChatService = {
   // Grup oluştur
   createGroup: async (creatorId: string, data: CreateGroupData): Promise<{ data: GroupChat | null; error: any }> => {
+    console.log('🔵 createGroup başladı - creatorId:', creatorId);
+    
     // Grubu oluştur
     const { data: group, error: groupError } = await supabase
       .from('group_chats')
@@ -71,12 +73,15 @@ export const groupChatService = {
       .select()
       .single();
 
+    console.log('🔵 group_chats insert sonucu:', { group, groupError });
+
     if (groupError || !group) {
+      console.error('❌ Grup oluşturma hatası:', groupError);
       return { data: null, error: groupError };
     }
 
     // Oluşturanı admin olarak ekle
-    await supabase
+    const { error: memberError } = await supabase
       .from('group_members')
       .insert({
         group_id: group.id,
@@ -84,21 +89,38 @@ export const groupChatService = {
         role: 'admin',
       });
 
-    // Sistem mesajı gönder
-    await supabase
+    console.log('🔵 group_members insert sonucu:', { memberError });
+    
+    if (memberError) {
+      console.error('❌ Üyelik ekleme hatası:', memberError);
+      // Üyelik eklenemezse grubu sil
+      await supabase.from('group_chats').delete().eq('id', group.id);
+      return { data: null, error: memberError };
+    }
+
+    // Sistem mesajı gönder - sender_id olarak creator kullan (RLS için gerekli)
+    const { error: msgError } = await supabase
       .from('group_messages')
       .insert({
         group_id: group.id,
-        sender_id: null,
+        sender_id: creatorId, // NULL yerine creator ID kullan - RLS politikası için
         content: 'Grup oluşturuldu',
         message_type: 'system',
       });
 
+    console.log('🔵 group_messages insert sonucu:', { msgError });
+    if (msgError) {
+      console.warn('⚠️ Sistem mesajı eklenemedi (kritik değil):', msgError);
+    }
+
+    console.log('✅ Grup başarıyla oluşturuldu:', group.id);
     return { data: group, error: null };
   },
 
   // Kullanıcının gruplarını getir
   getMyGroups: async (userId: string): Promise<{ data: GroupChat[] | null; error: any }> => {
+    console.log('🔵 getMyGroups çağrıldı - userId:', userId);
+    
     const { data, error } = await supabase
       .from('group_members')
       .select(`
@@ -110,7 +132,23 @@ export const groupChatService = {
       .eq('user_id', userId)
       .order('joined_at', { ascending: false });
 
-    const groups = data?.map(d => (d as any).group).filter(Boolean) as GroupChat[];
+    console.log('🔵 getMyGroups sonucu:', { data, error });
+    
+    let groups = data?.map(d => (d as any).group).filter(Boolean) as GroupChat[];
+    
+    // Geçersiz avatar URL'lerini temizle (blob:, file:// gibi geçici URL'ler)
+    if (groups) {
+      groups = groups.map(group => {
+        if (group.avatar_url && !group.avatar_url.startsWith('http://') && !group.avatar_url.startsWith('https://')) {
+          console.log('🔵 Geçersiz avatar_url temizlendi:', group.avatar_url);
+          return { ...group, avatar_url: null };
+        }
+        return group;
+      });
+    }
+    
+    console.log('🔵 Filtrelenmiş gruplar:', groups?.length || 0);
+    
     return { data: groups || null, error };
   },
 
@@ -436,6 +474,59 @@ export const groupChatService = {
   // Subscription'ı kapat
   unsubscribe: async (channel: RealtimeChannel) => {
     await supabase.removeChannel(channel);
+  },
+
+  // Grup fotoğrafını storage'a yükle
+  uploadGroupImage: async (groupId: string, imageUri: string): Promise<{ url: string | null; error: any }> => {
+    try {
+      console.log('🔵 uploadGroupImage başladı - groupId:', groupId);
+      
+      const fileName = `group_${groupId}_${Date.now()}.jpg`;
+      
+      // URI'den blob'a çevir (web ve mobile için)
+      let imageBlob: Blob;
+      if (imageUri.startsWith('data:')) {
+        // Base64 data URL
+        const response = await fetch(imageUri);
+        imageBlob = await response.blob();
+      } else {
+        // File veya blob URL
+        const response = await fetch(imageUri);
+        imageBlob = await response.blob();
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from('groups')
+        .upload(fileName, imageBlob, {
+          contentType: 'image/jpeg',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error('❌ Grup fotoğrafı yükleme hatası:', uploadError);
+        return { url: null, error: uploadError };
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('groups')
+        .getPublicUrl(fileName);
+
+      console.log('✅ Grup fotoğrafı yüklendi:', publicUrlData.publicUrl);
+      return { url: publicUrlData.publicUrl, error: null };
+    } catch (error) {
+      console.error('❌ uploadGroupImage catch error:', error);
+      return { url: null, error };
+    }
+  },
+
+  // Grup avatar_url güncelle
+  updateGroupAvatar: async (groupId: string, avatarUrl: string): Promise<{ error: any }> => {
+    const { error } = await supabase
+      .from('group_chats')
+      .update({ avatar_url: avatarUrl })
+      .eq('id', groupId);
+    
+    return { error };
   },
 };
 

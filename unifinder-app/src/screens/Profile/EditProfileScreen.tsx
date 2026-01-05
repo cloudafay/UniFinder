@@ -45,7 +45,8 @@ const EditProfileScreen: React.FC = () => {
     user?.interests || []
   );
   const [photos, setPhotos] = useState<string[]>(user?.photos || []);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl || user?.photos?.[0] || null);
+  // Avatar artık photos'tan bağımsız - sadece avatarUrl kullanılıyor
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl || null);
   const [isSaving, setIsSaving] = useState(false);
 
   const toggleInterest = (interest: string) => {
@@ -119,27 +120,35 @@ const EditProfileScreen: React.FC = () => {
     }
 
     setIsSaving(true);
+    console.log('🚀 handleSave başladı');
+    console.log('📸 Kaydedilecek fotoğraflar:', photos);
+    console.log('🖼️ Avatar URL:', avatarUrl);
 
     try {
-      // Prepare photos array - avatar'ı ilk sıraya koy
-      let finalPhotos = [...photos];
+      // Photos ve avatar artık tamamen bağımsız
+      console.log('📦 Vitrin fotoğrafları:', photos);
+      console.log('🖼️ Profil fotoğrafı (avatar):', avatarUrl);
 
-      // Eğer avatar seçildiyse ve photos'ta yoksa, başa ekle
-      if (avatarUrl && !finalPhotos.includes(avatarUrl)) {
-        finalPhotos = [avatarUrl, ...finalPhotos];
-      }
-
-      // Update user with all fields
-      await updateUser({
+      // Update user with all fields - avatar ve photos ayrı ayrı kaydediliyor
+      const result = await updateUser({
         fullName: fullName.trim(),
         bio: bio.trim(),
         department: department.trim(),
         year: year.trim(),
         interests: selectedInterests,
-        photos: finalPhotos,
-        avatarUrl: avatarUrl || finalPhotos[0] || undefined,
+        photos: photos, // Vitrin fotoğrafları
+        avatarUrl: avatarUrl || undefined, // Profil fotoğrafı (ayrı)
       });
 
+      console.log('📋 updateUser sonucu:', result);
+
+      if (result?.error) {
+        console.error('❌ updateUser hatası:', result.error);
+        Alert.alert('Hata', result.error);
+        return;
+      }
+
+      console.log('✅ Profil başarıyla güncellendi!');
       Alert.alert('Başarılı', 'Profiliniz güncellendi', [
         {
           text: 'Tamam',
@@ -150,20 +159,19 @@ const EditProfileScreen: React.FC = () => {
         }
       ]);
     } catch (error: any) {
+      console.error('💥 handleSave exception:', error);
       Alert.alert('Hata', error.message || 'Profil güncellenirken bir hata oluştu');
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Avatar için varsayılan görsel
+  // Avatar için varsayılan görsel - photos'tan bağımsız
   const getAvatarSource = () => {
     if (avatarUrl) {
       return { uri: avatarUrl };
     }
-    if (photos.length > 0) {
-      return { uri: photos[0] };
-    }
+    // Avatar yoksa default avatar göster - photos[0]'a fallback YAPMA
     return { uri: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(fullName || 'U') + '&size=200&background=6366f1&color=fff' };
   };
 
@@ -250,11 +258,6 @@ const EditProfileScreen: React.FC = () => {
                 >
                   <MaterialIcons name="close" size={16} color="#fff" />
                 </TouchableOpacity>
-                {index === 0 && (
-                  <View style={styles.mainPhotoBadge}>
-                    <Text style={styles.mainPhotoText}>Ana</Text>
-                  </View>
-                )}
               </View>
             ))}
             {photos.length < 6 && (

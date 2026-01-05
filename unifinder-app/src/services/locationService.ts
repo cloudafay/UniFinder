@@ -84,7 +84,7 @@ export const locationService = {
         .update({
           latitude: location.latitude,
           longitude: location.longitude,
-          location_updated_at: new Date().toISOString(),
+          // location_updated_at kolonu profiles tablosunda yok, updated_at otomatik güncellenir
         })
         .eq('id', userId);
 
