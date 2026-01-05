@@ -8,6 +8,19 @@ import { notificationService } from './notificationService';
 export const matchService = {
   // Swipe yap (like, nope, superlike)
   swipe: async (swiperId: string, swipedId: string, action: 'like' | 'nope' | 'superlike') => {
+    // Önce bu swipe'ın daha önce yapılıp yapılmadığını kontrol et
+    const { data: existingSwipe } = await supabase
+      .from('swipes')
+      .select('id, action')
+      .eq('swiper_id', swiperId)
+      .eq('swiped_id', swipedId)
+      .maybeSingle();
+
+    if (existingSwipe) {
+      console.log('⚠️ Bu kullanıcıya zaten swipe yapılmış:', existingSwipe.action);
+      return { data: existingSwipe, isMatch: false, error: { message: 'Zaten swipe yapılmış' } };
+    }
+
     // Swipe kaydet
     const { data: swipeData, error: swipeError } = await supabase
       .from('swipes')
@@ -41,15 +54,15 @@ export const matchService = {
         type: 'like_request',
         title: isSuperLike ? '⭐ Süper Beğeni!' : '💖 Yeni Beğeni!',
         body: `${swiperName} sizi ${isSuperLike ? 'süper ' : ''}beğendi! Eşleşmek istiyorsanız onaylayın.`,
-        data: { 
-          likerId: swiperId, 
+        data: {
+          likerId: swiperId,
           likerName: swiperName,
           likerPhoto: swiperPhoto,
           isSuperLike,
           swipeId: swipeData.id,
         },
       });
-      
+
       if (notifError) {
         console.error('❌ Bildirim gönderme hatası:', notifError);
       } else {
@@ -135,7 +148,7 @@ export const matchService = {
           .eq('user1_id', user1)
           .eq('user2_id', user2)
           .single();
-        
+
         return { data: existingMatch, error: null };
       }
       return { data: null, error: matchError };
