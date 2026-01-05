@@ -68,7 +68,7 @@ const OnboardingScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
-  
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
   const slidesRef = useRef<FlatList>(null);
@@ -144,7 +144,7 @@ const OnboardingScreen: React.FC = () => {
               key={index}
               style={[
                 styles.dot,
-                { 
+                {
                   width: isActive ? 24 : 8,
                   backgroundColor: isActive ? item.color : colors.textTertiary,
                   opacity: isActive ? 1 : 0.3,
@@ -160,11 +160,11 @@ const OnboardingScreen: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor: isDark ? '#0a0a1a' : '#f8fafc' }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Gradient Background */}
       <LinearGradient
-        colors={isDark 
-          ? ['#0a0a1a', '#1a1a3a', '#0a0a1a'] 
+        colors={isDark
+          ? ['#0a0a1a', '#1a1a3a', '#0a0a1a']
           : ['#f8fafc', '#e8edff', '#f8fafc']}
         style={StyleSheet.absoluteFill}
       />
@@ -251,10 +251,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   slidesContainer: {
-    alignItems: 'center',
+    // Removed alignItems to prevent layout issues on mobile
   },
   slide: {
-    flex: 1,
+    height: height * 0.7,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 40,
