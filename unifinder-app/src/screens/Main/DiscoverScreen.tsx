@@ -54,7 +54,7 @@ const DiscoverScreen: React.FC = () => {
   const { user } = useAuth();
   const { location, discoveryRadius, requestLocation, permissionStatus } = useLocation();
   const { filters } = useFilters();
-  
+
   // State
   const [profiles, setProfiles] = useState<DiscoverProfile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -63,7 +63,7 @@ const DiscoverScreen: React.FC = () => {
   const [useLocationFilter, setUseLocationFilter] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [undoTimeRemaining, setUndoTimeRemaining] = useState(0);
-  
+
   const position = useRef(new Animated.ValueXY()).current;
   const swipeAnim = useRef(new Animated.Value(1)).current;
 
@@ -76,7 +76,7 @@ const DiscoverScreen: React.FC = () => {
       console.log('❌ No user ID, skipping profile load');
       return;
     }
-    
+
     console.log('🚀 Loading profiles for user:', user.id);
     console.log('📊 Current filters:', JSON.stringify(filters));
     setIsLoading(true);
@@ -104,7 +104,7 @@ const DiscoverScreen: React.FC = () => {
         profilesData = data || [];
         console.log('✅ Profiles fetched:', profilesData.length);
       }
-      
+
       if (profilesData.length > 0) {
         // Profilleri işle ve filtrele
         let processedProfiles = profilesData.map(profile => ({
@@ -112,7 +112,7 @@ const DiscoverScreen: React.FC = () => {
           age: profile.year ? calculateAge(profile.year) : undefined,
           distance_km: profile.distance_km,
         }));
-        
+
         console.log('🔄 Processing profiles:', processedProfiles.length);
 
         // Filtreleri uygula - sadece aktif filtreler için
@@ -121,7 +121,7 @@ const DiscoverScreen: React.FC = () => {
           processedProfiles = processedProfiles.filter(p => p.is_verified);
           console.log('🔍 VerifiedOnly filter:', beforeFilter, '->', processedProfiles.length);
         }
-        
+
         // Yaş filtresi
         if (filters.ageMin > 18 || filters.ageMax < 100) {
           const beforeFilter = processedProfiles.length;
@@ -143,7 +143,7 @@ const DiscoverScreen: React.FC = () => {
         // İsim/bölüm araması
         if (filters.searchQuery.trim()) {
           const query = filters.searchQuery.toLowerCase();
-          processedProfiles = processedProfiles.filter(p => 
+          processedProfiles = processedProfiles.filter(p =>
             (p.full_name && p.full_name.toLowerCase().includes(query)) ||
             (p.department && p.department.toLowerCase().includes(query))
           );
@@ -156,7 +156,7 @@ const DiscoverScreen: React.FC = () => {
             ...p,
             is_boosted: boostedUserIds.includes(p.id),
           }));
-          
+
           // Boosted profilleri öne al
           processedProfiles.sort((a, b) => {
             if (a.is_boosted && !b.is_boosted) return -1;
@@ -269,25 +269,25 @@ const DiscoverScreen: React.FC = () => {
   // Swipe işlemi
   const performSwipe = async (action: 'like' | 'nope' | 'superlike') => {
     if (!user?.id || !currentProfile || isSwipeLoading) return;
-    
+
     setIsSwipeLoading(true);
     try {
       // Undo için swipe'ı kaydet
       await undoService.storeSwipe(user.id, currentProfile, action);
       setCanUndo(true);
       setUndoTimeRemaining(5000);
-      
+
       const { data, isMatch, error } = await matchService.swipe(
         user.id,
         currentProfile.id,
         action
       );
-      
+
       if (error) {
         console.error('Swipe hatası:', error);
       } else {
         console.log('Swipe kaydedildi:', action, isMatch ? '- EŞLEŞTİ!' : '');
-        
+
         // Eğer like veya superlike ise match kontrolü yap
         if ((action === 'like' || action === 'superlike') && isMatch) {
           checkForMatch(currentProfile, true);
@@ -303,10 +303,10 @@ const DiscoverScreen: React.FC = () => {
   // Undo işlemi
   const handleUndo = async () => {
     if (!user?.id || !canUndo) return;
-    
+
     const isPremium = false; // TODO: Premium kontrolü ekle
     const result = await undoService.performUndo(user.id, isPremium);
-    
+
     if (result.success && result.profile) {
       // Profili geri ekle
       setProfiles(prev => [result.profile!, ...prev.slice(currentIndex)]);
@@ -322,11 +322,11 @@ const DiscoverScreen: React.FC = () => {
       const timer = setTimeout(() => {
         setUndoTimeRemaining(prev => Math.max(0, prev - 100));
       }, 100);
-      
+
       if (undoTimeRemaining <= 100) {
         setCanUndo(false);
       }
-      
+
       return () => clearTimeout(timer);
     }
   }, [undoTimeRemaining]);
@@ -360,7 +360,7 @@ const DiscoverScreen: React.FC = () => {
   const handleLike = () => {
     if (!currentProfile) return;
     const profile = currentProfile;
-    
+
     Animated.parallel([
       Animated.timing(position, {
         toValue: { x: width + 100, y: 0 },
@@ -380,7 +380,7 @@ const DiscoverScreen: React.FC = () => {
 
   const handlePass = () => {
     if (!currentProfile) return;
-    
+
     Animated.parallel([
       Animated.timing(position, {
         toValue: { x: -width - 100, y: 0 },
@@ -401,7 +401,7 @@ const DiscoverScreen: React.FC = () => {
   const handleSuperLike = () => {
     if (!currentProfile) return;
     const profile = currentProfile;
-    
+
     Animated.parallel([
       Animated.timing(position, {
         toValue: { x: 0, y: -height },
@@ -422,14 +422,20 @@ const DiscoverScreen: React.FC = () => {
   const nextCard = () => {
     position.setValue({ x: 0, y: 0 });
     swipeAnim.setValue(1);
-    setCurrentIndex((prev) => {
-      if (prev + 1 >= profiles.length) {
-        // Profiller bitti, yeniden yükle
+
+    // Remove the swiped profile from the list
+    setProfiles((prev) => {
+      const newProfiles = prev.filter((_, idx) => idx !== currentIndex);
+
+      // If no profiles left, reload
+      if (newProfiles.length === 0) {
         loadProfiles();
-        return 0;
       }
-      return prev + 1;
+
+      return newProfiles;
     });
+    // Current index stays the same since we removed the current profile
+    // Next profile moves into current position
   };
 
   // Render next card (background)
@@ -482,14 +488,14 @@ const DiscoverScreen: React.FC = () => {
               <Text style={[styles.logoText, { color: colors.textPrimary }]}>UniFinder</Text>
             </View>
           </View>
-          
+
           <View style={styles.emptyContainer}>
             <MaterialIcons name="search-off" size={80} color={colors.textTertiary} />
             <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Profil Bulunamadı</Text>
             <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
               Şu an gösterilecek profil yok.{'\n'}Daha sonra tekrar kontrol edin!
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.refreshButton, { backgroundColor: colors.primary }]}
               onPress={loadProfiles}
             >
@@ -505,150 +511,150 @@ const DiscoverScreen: React.FC = () => {
   return (
     <ScreenBackground intensity={50}>
       <View style={[styles.container, { paddingTop: insets.top, backgroundColor: 'transparent' }]}>
-      {/* Ambient Background */}
-      <View style={styles.backgroundBlobs}>
-        <View style={[styles.blob, styles.blobTop]} />
-        <View style={[styles.blob, styles.blobBottom]} />
-      </View>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <View style={[styles.logoIcon, { backgroundColor: `${colors.primary}15` }]}>
-            <MaterialIcons name="school" size={24} color={colors.primary} />
-          </View>
-          <Text style={[styles.logoText, { color: colors.textPrimary }]}>UniFinder</Text>
+        {/* Ambient Background */}
+        <View style={styles.backgroundBlobs}>
+          <View style={[styles.blob, styles.blobTop]} />
+          <View style={[styles.blob, styles.blobBottom]} />
         </View>
-        <TouchableOpacity
-          style={[styles.filterButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-          onPress={() => navigation.navigate('FilterSearch' as never)}
-        >
-          <MaterialIcons name="tune" size={24} color={colors.textSecondary} />
-        </TouchableOpacity>
-      </View>
 
-      {/* Card Container */}
-      <View style={styles.cardContainer}>
-        {/* Next Card (Background) */}
-        {renderNextCard()}
-        
-        {/* Current Card */}
-        <Animated.View
-          style={[
-            styles.card,
-            {
-              transform: [
-                { translateX: position.x },
-                { translateY: position.y },
-                { rotate },
-              ],
-            },
-          ]}
-          {...panResponder.panHandlers}
-        >
-          {/* User Photo */}
-          <Image 
-            source={{ uri: currentProfile.photos?.[0] || currentProfile.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(currentProfile.full_name || 'U') + '&size=400&background=6366f1&color=fff' }} 
-            style={styles.cardImage} 
-            resizeMode="cover"
-          />
-
-          {/* Like/Nope/Super Labels */}
-          <Animated.View style={[styles.likeLabel, { opacity: likeOpacity }]}>
-            <Text style={styles.likeLabelText}>BEĞENDİM</Text>
-          </Animated.View>
-          <Animated.View style={[styles.nopeLabel, { opacity: nopeOpacity }]}>
-            <Text style={styles.nopeLabelText}>GEÇ</Text>
-          </Animated.View>
-          <Animated.View style={[styles.superLikeLabel, { opacity: superLikeOpacity }]}>
-            <Text style={styles.superLikeLabelText}>SÜPER</Text>
-          </Animated.View>
-
-          {/* Gradient Overlay */}
-          <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.6)']}
-            style={styles.gradient}
-          />
-
-          {/* Info Panel */}
-          <View style={styles.infoPanel}>
-            <View style={styles.infoHeader}>
-              <View style={styles.nameContainer}>
-                <Text style={styles.nameText}>
-                  {currentProfile.full_name || 'Kullanıcı'}{currentProfile.age ? `, ${currentProfile.age}` : ''}
-                </Text>
-                {/* Verified Badge */}
-                {currentProfile.is_verified && (
-                  <View style={styles.verifiedBadge}>
-                    <MaterialIcons name="verified" size={18} color="#3b82f6" />
-                  </View>
-                )}
-                {/* Boost Badge */}
-                {currentProfile.is_boosted && (
-                  <View style={styles.boostBadge}>
-                    <MaterialIcons name="bolt" size={14} color="#f59e0b" />
-                  </View>
-                )}
-                {/* Student Badge */}
-                {(currentProfile as any).badge_type && (
-                  <StudentBadgeInline badgeType={(currentProfile as any).badge_type} />
-                )}
-                {currentProfile.is_active && (
-                  <View style={styles.activeIndicator}>
-                    <View style={styles.activeDot} />
-                    <Text style={styles.activeText}>Aktif</Text>
-                  </View>
-                )}
-              </View>
-              <View style={styles.departmentContainer}>
-                <MaterialIcons name="school" size={14} color="rgba(255,255,255,0.8)" />
-                <Text style={styles.departmentText}>
-                  {currentProfile.department || 'Bölüm'} • {(currentProfile as any).university_name || currentProfile.university || 'Üniversite'}
-                </Text>
-              </View>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <View style={[styles.logoIcon, { backgroundColor: `${colors.primary}15` }]}>
+              <MaterialIcons name="school" size={24} color={colors.primary} />
             </View>
-
-            {/* Tags */}
-            <View style={styles.tagsContainer}>
-              {(currentProfile.interests || []).slice(0, 3).map((interest, index) => (
-                <View key={index} style={styles.tag}>
-                  <Text style={styles.tagText}>{interest}</Text>
-                </View>
-              ))}
-            </View>
+            <Text style={[styles.logoText, { color: colors.textPrimary }]}>UniFinder</Text>
           </View>
-        </Animated.View>
-      </View>
-
-      {/* Action Buttons */}
-      <View style={styles.actionsContainer}>
-        {/* Undo Button */}
-        {canUndo && (
-          <TouchableOpacity 
-            style={[styles.undoButton, { opacity: undoTimeRemaining / 5000 }]} 
-            onPress={handleUndo}
-            accessibilityLabel="Son swipe'ı geri al"
+          <TouchableOpacity
+            style={[styles.filterButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            onPress={() => navigation.navigate('FilterSearch' as never)}
           >
-            <MaterialIcons name="replay" size={24} color="#f59e0b" />
+            <MaterialIcons name="tune" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
-        )}
-        
-        {/* Pass Button */}
-        <TouchableOpacity style={styles.passButton} onPress={handlePass}>
-          <MaterialIcons name="close" size={32} color="#f43f5e" />
-        </TouchableOpacity>
+        </View>
 
-        {/* Super Like Button */}
-        <TouchableOpacity style={styles.superLikeButton} onPress={handleSuperLike}>
-          <MaterialIcons name="star" size={28} color="#38bdf8" />
-        </TouchableOpacity>
+        {/* Card Container */}
+        <View style={styles.cardContainer}>
+          {/* Next Card (Background) */}
+          {renderNextCard()}
 
-        {/* Like Button */}
-        <TouchableOpacity style={styles.likeButton} onPress={handleLike}>
-          <MaterialIcons name="favorite" size={32} color="#fff" />
-        </TouchableOpacity>
+          {/* Current Card */}
+          <Animated.View
+            style={[
+              styles.card,
+              {
+                transform: [
+                  { translateX: position.x },
+                  { translateY: position.y },
+                  { rotate },
+                ],
+              },
+            ]}
+            {...panResponder.panHandlers}
+          >
+            {/* User Photo */}
+            <Image
+              source={{ uri: currentProfile.photos?.[0] || currentProfile.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(currentProfile.full_name || 'U') + '&size=400&background=6366f1&color=fff' }}
+              style={styles.cardImage}
+              resizeMode="cover"
+            />
+
+            {/* Like/Nope/Super Labels */}
+            <Animated.View style={[styles.likeLabel, { opacity: likeOpacity }]}>
+              <Text style={styles.likeLabelText}>BEĞENDİM</Text>
+            </Animated.View>
+            <Animated.View style={[styles.nopeLabel, { opacity: nopeOpacity }]}>
+              <Text style={styles.nopeLabelText}>GEÇ</Text>
+            </Animated.View>
+            <Animated.View style={[styles.superLikeLabel, { opacity: superLikeOpacity }]}>
+              <Text style={styles.superLikeLabelText}>SÜPER</Text>
+            </Animated.View>
+
+            {/* Gradient Overlay */}
+            <LinearGradient
+              colors={['transparent', 'rgba(0,0,0,0.6)']}
+              style={styles.gradient}
+            />
+
+            {/* Info Panel */}
+            <View style={styles.infoPanel}>
+              <View style={styles.infoHeader}>
+                <View style={styles.nameContainer}>
+                  <Text style={styles.nameText}>
+                    {currentProfile.full_name || 'Kullanıcı'}{currentProfile.age ? `, ${currentProfile.age}` : ''}
+                  </Text>
+                  {/* Verified Badge */}
+                  {currentProfile.is_verified && (
+                    <View style={styles.verifiedBadge}>
+                      <MaterialIcons name="verified" size={18} color="#3b82f6" />
+                    </View>
+                  )}
+                  {/* Boost Badge */}
+                  {currentProfile.is_boosted && (
+                    <View style={styles.boostBadge}>
+                      <MaterialIcons name="bolt" size={14} color="#f59e0b" />
+                    </View>
+                  )}
+                  {/* Student Badge */}
+                  {(currentProfile as any).badge_type && (
+                    <StudentBadgeInline badgeType={(currentProfile as any).badge_type} />
+                  )}
+                  {currentProfile.is_active && (
+                    <View style={styles.activeIndicator}>
+                      <View style={styles.activeDot} />
+                      <Text style={styles.activeText}>Aktif</Text>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.departmentContainer}>
+                  <MaterialIcons name="school" size={14} color="rgba(255,255,255,0.8)" />
+                  <Text style={styles.departmentText}>
+                    {currentProfile.department || 'Bölüm'} • {(currentProfile as any).university_name || currentProfile.university || 'Üniversite'}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Tags */}
+              <View style={styles.tagsContainer}>
+                {(currentProfile.interests || []).slice(0, 3).map((interest, index) => (
+                  <View key={index} style={styles.tag}>
+                    <Text style={styles.tagText}>{interest}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </Animated.View>
+        </View>
+
+        {/* Action Buttons */}
+        <View style={styles.actionsContainer}>
+          {/* Undo Button */}
+          {canUndo && (
+            <TouchableOpacity
+              style={[styles.undoButton, { opacity: undoTimeRemaining / 5000 }]}
+              onPress={handleUndo}
+              accessibilityLabel="Son swipe'ı geri al"
+            >
+              <MaterialIcons name="replay" size={24} color="#f59e0b" />
+            </TouchableOpacity>
+          )}
+
+          {/* Pass Button */}
+          <TouchableOpacity style={styles.passButton} onPress={handlePass}>
+            <MaterialIcons name="close" size={32} color="#f43f5e" />
+          </TouchableOpacity>
+
+          {/* Super Like Button */}
+          <TouchableOpacity style={styles.superLikeButton} onPress={handleSuperLike}>
+            <MaterialIcons name="star" size={28} color="#38bdf8" />
+          </TouchableOpacity>
+
+          {/* Like Button */}
+          <TouchableOpacity style={styles.likeButton} onPress={handleLike}>
+            <MaterialIcons name="favorite" size={32} color="#fff" />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
     </ScreenBackground>
   );
 };
