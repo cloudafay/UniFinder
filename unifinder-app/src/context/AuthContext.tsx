@@ -5,7 +5,8 @@ import { decode } from 'base64-arraybuffer';
 import { supabase } from '../lib/supabase';
 import { Session } from '@supabase/supabase-js';
 
-// Legacy FileSystem for base64 reading
+// Modern FileSystem API (Expo SDK 54+)
+// Platform-safe import
 let FileSystem: any = null;
 if (Platform.OS !== 'web') {
   FileSystem = require('expo-file-system');
@@ -242,8 +243,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
                     // Platform'a göre farklı yükleme yöntemi
                     if (Platform.OS !== 'web') {
-                      // Mobile: FileSystem ile base64 oku (new API)
-                      console.log('📱 Mobile upload: Reading file as base64...');
+                      // Mobile: Yeni FileSystem API kullan (Expo SDK 54+)
+                      console.log('📱 Mobile upload: Reading file with new API...');
+
+                      const fileInfo = await FileSystem.getInfoAsync(photoUri);
+                      if (!fileInfo.exists) {
+                        throw new Error('File not found');
+                      }
 
                       const base64 = await FileSystem.readAsStringAsync(photoUri, {
                         encoding: FileSystem.EncodingType?.Base64 || 'base64',
@@ -326,9 +332,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
                   let uploadResult;
 
-                  // Mobile için FileSystem kullan (new API)
+                  // Mobile için yeni FileSystem API kullan
                   if (Platform.OS !== 'web') {
-                    console.log('📱 Mobile photo upload with FileSystem...');
+                    console.log('📱 Mobile photo upload with new FileSystem API...');
+
+                    // Dosya varlığını kontrol et
+                    const fileInfo = await FileSystem.getInfoAsync(photoUri);
+                    if (!fileInfo.exists) {
+                      console.error(`❌ File not found: ${photoUri}`);
+                      continue;
+                    }
 
                     const base64Data = await FileSystem.readAsStringAsync(photoUri, {
                       encoding: FileSystem.EncodingType?.Base64 || 'base64',

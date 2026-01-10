@@ -266,17 +266,23 @@ const DiscoverScreen: React.FC = () => {
     }
   }, [navigation]);
 
-  // Swipe işlemi
+  // Swipe işlemi (optimized)
   const performSwipe = async (action: 'like' | 'nope' | 'superlike') => {
-    if (!user?.id || !currentProfile || isSwipeLoading) return;
-    
+    if (!user?.id || !currentProfile || isSwipeLoading) {
+      console.log('⚠️ Swipe iptal edildi (zaten işleniyor veya profil yok)');
+      return;
+    }
+
     setIsSwipeLoading(true);
     try {
-      // Undo için swipe'ı kaydet
-      await undoService.storeSwipe(user.id, currentProfile, action);
-      setCanUndo(true);
-      setUndoTimeRemaining(5000);
-      
+      // Undo için swipe'ı kaydet (non-blocking)
+      undoService.storeSwipe(user.id, currentProfile, action)
+        .then(() => {
+          setCanUndo(true);
+          setUndoTimeRemaining(5000);
+        })
+        .catch(err => console.log('⚠️ Undo kaydetme atlandı:', err.message));
+
       const { data, isMatch, error } = await matchService.swipe(
         user.id,
         currentProfile.id,
@@ -338,6 +344,8 @@ const DiscoverScreen: React.FC = () => {
         position.setValue({ x: gesture.dx, y: gesture.dy });
       },
       onPanResponderRelease: (_, gesture) => {
+        if (isSwipeLoading) return; // Swipe işleniyorsa yeni bir swipe yapma
+
         if (gesture.dx > SWIPE_THRESHOLD) {
           handleLike();
         } else if (gesture.dx < -SWIPE_THRESHOLD) {
@@ -350,7 +358,7 @@ const DiscoverScreen: React.FC = () => {
             toValue: { x: 0, y: 0 },
             friction: 5,
             tension: 40,
-            useNativeDriver: Platform.OS !== 'web',
+            useNativeDriver: true,
           }).start();
         }
       },
@@ -358,64 +366,64 @@ const DiscoverScreen: React.FC = () => {
   ).current;
 
   const handleLike = () => {
-    if (!currentProfile) return;
+    if (!currentProfile || isSwipeLoading) return;
     const profile = currentProfile;
     
     Animated.parallel([
       Animated.timing(position, {
         toValue: { x: width + 100, y: 0 },
-        duration: SWIPE_OUT_DURATION,
-        useNativeDriver: Platform.OS !== 'web',
+        duration: 200, // Daha hızlı animasyon (300ms -> 200ms)
+        useNativeDriver: true,
       }),
       Animated.timing(swipeAnim, {
         toValue: 0,
-        duration: SWIPE_OUT_DURATION,
-        useNativeDriver: Platform.OS !== 'web',
+        duration: 200,
+        useNativeDriver: true,
       }),
     ]).start(() => {
-      performSwipe('like');
       nextCard();
+      performSwipe('like'); // Async olarak çalıştır
     });
   };
 
   const handlePass = () => {
-    if (!currentProfile) return;
-    
+    if (!currentProfile || isSwipeLoading) return;
+
     Animated.parallel([
       Animated.timing(position, {
         toValue: { x: -width - 100, y: 0 },
-        duration: SWIPE_OUT_DURATION,
-        useNativeDriver: Platform.OS !== 'web',
+        duration: 200,
+        useNativeDriver: true,
       }),
       Animated.timing(swipeAnim, {
         toValue: 0,
-        duration: SWIPE_OUT_DURATION,
-        useNativeDriver: Platform.OS !== 'web',
+        duration: 200,
+        useNativeDriver: true,
       }),
     ]).start(() => {
-      performSwipe('nope');
       nextCard();
+      performSwipe('nope');
     });
   };
 
   const handleSuperLike = () => {
-    if (!currentProfile) return;
+    if (!currentProfile || isSwipeLoading) return;
     const profile = currentProfile;
     
     Animated.parallel([
       Animated.timing(position, {
         toValue: { x: 0, y: -height },
-        duration: SWIPE_OUT_DURATION,
-        useNativeDriver: Platform.OS !== 'web',
+        duration: 200,
+        useNativeDriver: true,
       }),
       Animated.timing(swipeAnim, {
         toValue: 0,
-        duration: SWIPE_OUT_DURATION,
-        useNativeDriver: Platform.OS !== 'web',
+        duration: 200,
+        useNativeDriver: true,
       }),
     ]).start(() => {
-      performSwipe('superlike');
       nextCard();
+      performSwipe('superlike');
     });
   };
 

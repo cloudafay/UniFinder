@@ -17,6 +17,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { profileService } from '../../services/profileService';
 import { promptService } from '../../services/promptService';
+import { getClassYearLabel } from '../../utils/helpers';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width - 32;
@@ -148,7 +149,7 @@ const ProfilePreviewScreen: React.FC = () => {
             {/* Info Overlay */}
             <View style={styles.infoOverlay}>
               <Text style={styles.nameText}>
-                {profile.full_name}, {profile.year ? getAge(profile.year) : ''}
+                {profile.full_name} • {getClassYearLabel(profile.year)}
               </Text>
               <View style={styles.departmentRow}>
                 <MaterialIcons name="school" size={14} color="rgba(255,255,255,0.8)" />
@@ -232,14 +233,6 @@ const ProfilePreviewScreen: React.FC = () => {
       </ScrollView>
     </View>
   );
-};
-
-const getAge = (year: string): number => {
-  const yearMap: Record<string, number> = {
-    '1. Sınıf': 19, '2. Sınıf': 20, '3. Sınıf': 21, '4. Sınıf': 22,
-    'Yüksek Lisans': 24, 'Doktora': 26,
-  };
-  return yearMap[year] || 21;
 };
 
 const styles = StyleSheet.create({
