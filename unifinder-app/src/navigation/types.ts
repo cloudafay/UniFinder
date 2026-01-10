@@ -55,6 +55,7 @@ export type AuthStackParamList = {
 export type MainTabParamList = {
   Discover: undefined;
   Events: undefined;
+  Groups: undefined;
   Messages: undefined;
   Profile: undefined;
 };
@@ -112,40 +113,41 @@ export type RootStackParamList = {
   Following: { userId?: string };
   ProfileViewers: undefined;
   Premium: undefined;
-  
+
   // Mega Features (28 Aralık 2025 - Faz 2)
   // Gamification
   DailyTasks: undefined;
   Badges: { userId?: string };
   Leaderboard: undefined;
-  
+
   // Events
   Events: undefined;
   EventDetail: { eventId: string };
   CreateEvent: undefined;
-  
+
   // Groups
   GroupList: undefined;
   GroupChat: { groupId: string; groupName: string };
   CreateGroup: undefined;
   GroupMembers: { groupId: string; groupName: string };
-  
+  GroupSettings: { groupId: string; groupName: string };
+
   // Profile Enhancements
   ProfilePreview: undefined;
   EditPrompts: undefined;
   AdvancedFilters: undefined;
-  
+
   // Boost
   Boost: undefined;
-  
+
   // Video Call
   VideoCall: { matchId: string; userName: string; userPhoto: string; callType: 'video' | 'audio' };
   IncomingCall: { sessionId: string; callerId: string; callerName: string; callerPhoto: string; callType: 'video' | 'audio' };
   CallHistory: undefined;
-  
+
   // Verification
   PhotoVerification: undefined;
-  
+
   // Spotify
   SpotifyConnect: undefined;
 };
@@ -169,6 +171,6 @@ export type RootScreenProps<T extends keyof RootStackParamList> = NativeStackScr
 // Global navigasyon tipi tanımı
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends RootStackParamList { }
   }
 }

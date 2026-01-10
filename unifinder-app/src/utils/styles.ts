@@ -42,7 +42,7 @@ export const createShadow = (
  * Creates primary button shadow
  */
 export const primaryShadow = (): ViewStyle => {
-  return createShadow('#1337ec', 4, 0.4, 16, 8);
+  return createShadow('#6366F1', 4, 0.4, 16, 8);
 };
 
 /**
@@ -67,7 +67,7 @@ export const Shadows = {
   md: createShadow('#000000', 4, 0.1, 8, 4),
   lg: createShadow('#000000', 8, 0.15, 16, 8),
   xl: createShadow('#000000', 12, 0.2, 24, 12),
-  primary: createShadow('#1337ec', 4, 0.4, 14, 8),
+  primary: createShadow('#6366F1', 4, 0.4, 14, 8),
   danger: createShadow('#ef4444', 4, 0.4, 14, 8),
   success: createShadow('#22c55e', 4, 0.3, 12, 6),
 };

@@ -5,7 +5,8 @@ import { decode } from 'base64-arraybuffer';
 import { supabase } from '../lib/supabase';
 import { Session } from '@supabase/supabase-js';
 
-// Legacy FileSystem for base64 reading
+// Modern FileSystem API (Expo SDK 54+)
+// Platform-safe import
 let FileSystem: any = null;
 if (Platform.OS !== 'web') {
   FileSystem = require('expo-file-system');
@@ -31,7 +32,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
-  register: (data: RegisterData) => Promise<{ error?: string }>;
+  register: (data: RegisterData) => Promise<{ error?: string; needsEmailVerification?: boolean; email?: string }>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<{ error?: string }>;
   refreshProfile: () => Promise<void>;
@@ -81,7 +82,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Session'dan User nesnesine dönüştür
   const sessionToUser = async (currentSession: Session): Promise<User | null> => {
     const profile = await fetchProfile(currentSession.user.id);
-    
+
     if (!profile) {
       // Profil henüz oluşturulmamış olabilir (trigger gecikebilir)
       return {
@@ -116,7 +117,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const initAuth = async () => {
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
-        
+
         if (currentSession) {
           setSession(currentSession);
           const userData = await sessionToUser(currentSession);
@@ -135,16 +136,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         console.log('Auth state changed:', event);
-        
+
         setSession(newSession);
-        
+
         if (newSession) {
           const userData = await sessionToUser(newSession);
           setUser(userData);
         } else {
           setUser(null);
         }
-        
+
         setIsLoading(false);
       }
     );
@@ -177,7 +178,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const register = async (data: RegisterData): Promise<{ error?: string }> => {
     try {
       console.log('Starting Supabase signUp...');
-      
+
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -213,9 +214,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (authData.user) {
         // Session varsa direkt kullan, yoksa login yap
         let currentSession = authData.session;
-        
+
         console.log('📝 Registration - checking session:', { hasSession: !!currentSession });
-        
+
         if (!currentSession) {
           console.log('⚠️ No session from signUp, attempting auto-login...');
           // Email doğrulama kapalıysa, direkt login yapabiliriz
@@ -223,12 +224,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             email: data.email,
             password: data.password,
           });
-          
+
           if (loginError) {
             console.error('❌ Auto-login error:', loginError.message);
             // Email doğrulama açık - profili yine de güncellemeye çalış
             console.log('📝 Trying to update profile without session...');
-            
+
             // Fotoğrafları yükle (public erişim)
             let uploadedPhotoUrls: string[] = [];
             if (data.photos && data.photos.length > 0) {
@@ -239,14 +240,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                   try {
                     const fileName = `${authData.user.id}/photo_${i}_${Date.now()}.jpg`;
                     let uploadData: ArrayBuffer | Blob;
-                    
+
                     // Platform'a göre farklı yükleme yöntemi
                     if (Platform.OS !== 'web') {
-                      // Mobile: FileSystem ile base64 oku
-                      console.log('📱 Mobile upload: Reading file as base64...');
+                      // Mobile: Yeni FileSystem API kullan (Expo SDK 54+)
+                      console.log('📱 Mobile upload: Reading file with new API...');
+
                       const fileInfo = await FileSystem.getInfoAsync(photoUri);
-                      console.log('📁 File info:', fileInfo);
-                      
+                      if (!fileInfo.exists) {
+                        throw new Error('File not found');
+                      }
+
                       const base64 = await FileSystem.readAsStringAsync(photoUri, {
                         encoding: FileSystem.EncodingType?.Base64 || 'base64',
                       });
@@ -258,14 +262,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                       const response = await fetch(photoUri);
                       uploadData = await response.blob();
                     }
-                    
+
                     const { error: uploadError } = await supabase.storage
                       .from('photos')
-                      .upload(fileName, uploadData, { 
-                        contentType: 'image/jpeg', 
-                        upsert: true 
+                      .upload(fileName, uploadData, {
+                        contentType: 'image/jpeg',
+                        upsert: true
                       });
-                    
+
                     if (!uploadError) {
                       const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(fileName);
                       uploadedPhotoUrls.push(publicUrl);
@@ -279,7 +283,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
               }
             }
-            
+
             // Profili güncelle (service key ile yapılabilir veya trigger ile)
             const { error: profileError } = await supabase
               .from('profiles')
@@ -293,18 +297,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 avatar_url: uploadedPhotoUrls[0] || null,
               })
               .eq('id', authData.user.id);
-            
+
             if (profileError) {
               console.error('❌ Profile update error (no session):', profileError);
             } else {
               console.log('✅ Profile updated without session');
             }
-            
-            return { 
-              error: 'Kayıt başarılı! E-posta adresinizi doğrulamanız gerekiyor.' 
+
+            return {
+              error: 'Kayıt başarılı! E-posta adresinizi doğrulamanız gerekiyor.'
             };
           }
-          
+
           currentSession = loginData.session;
           console.log('✅ Auto-login successful');
         }
@@ -312,9 +316,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (currentSession) {
           // Kısa bir gecikme ekle (trigger'ın çalışması için)
           await new Promise(resolve => setTimeout(resolve, 1500));
-          
+
           console.log('Updating profile for user:', authData.user.id);
-          
+
           // Fotoğrafları Supabase Storage'a yükle
           let uploadedPhotoUrls: string[] = [];
           if (data.photos && data.photos.length > 0) {
@@ -325,20 +329,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 try {
                   const fileName = `${authData.user.id}/photo_${i}_${Date.now()}.jpg`;
                   console.log(`📸 Uploading photo ${i}:`, fileName);
-                  
+
                   let uploadResult;
-                  
-                  // Mobile için FileSystem kullan
+
+                  // Mobile için yeni FileSystem API kullan
                   if (Platform.OS !== 'web') {
-                    console.log('📱 Mobile photo upload with FileSystem...');
+                    console.log('📱 Mobile photo upload with new FileSystem API...');
+
+                    // Dosya varlığını kontrol et
                     const fileInfo = await FileSystem.getInfoAsync(photoUri);
-                    console.log('📁 File exists:', fileInfo.exists);
-                    
+                    if (!fileInfo.exists) {
+                      console.error(`❌ File not found: ${photoUri}`);
+                      continue;
+                    }
+
                     const base64Data = await FileSystem.readAsStringAsync(photoUri, {
                       encoding: FileSystem.EncodingType?.Base64 || 'base64',
                     });
                     console.log('📝 Base64 data length:', base64Data?.length);
-                    
+
                     uploadResult = await supabase.storage
                       .from('photos')
                       .upload(fileName, decode(base64Data), {
@@ -349,7 +358,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     // Web için fetch kullan
                     const response = await fetch(photoUri);
                     const blob = await response.blob();
-                    
+
                     uploadResult = await supabase.storage
                       .from('photos')
                       .upload(fileName, blob, {
@@ -357,7 +366,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                         upsert: true,
                       });
                   }
-                  
+
                   if (uploadResult.error) {
                     console.error(`❌ Photo ${i} upload error:`, uploadResult.error.message);
                   } else {
@@ -373,9 +382,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               }
             }
           }
-          
+
           console.log('📝 Updating profile with', uploadedPhotoUrls.length, 'photos');
-          
+
           const { error: profileError } = await supabase
             .from('profiles')
             .update({
@@ -427,47 +436,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       console.log('📝 updateUser called with:', userData);
-      
+
       // Fotoğrafları Storage'a yükle (eğer yerel URI ise)
       let uploadedPhotos: string[] = [];
       if (userData.photos && userData.photos.length > 0) {
         console.log('📸 Uploading photos...', userData.photos.length);
-        
+
         for (let i = 0; i < userData.photos.length; i++) {
           const photoUri = userData.photos[i];
-          
+
           // Zaten Supabase URL'i ise yükleme yapma
           if (photoUri.includes('supabase.co')) {
             console.log(`📸 Photo ${i} already uploaded:`, photoUri.substring(0, 50));
             uploadedPhotos.push(photoUri);
             continue;
           }
-          
+
           // Yerel dosyayı yükle
           try {
             console.log(`📸 Uploading photo ${i}:`, photoUri.substring(0, 50));
             const fileName = `${user.id}/photo_${i}_${Date.now()}.jpg`;
-            
+
             const response = await fetch(photoUri);
             const blob = await response.blob();
-            
+
             const { data: uploadData, error: uploadError } = await supabase.storage
               .from('photos')
               .upload(fileName, blob, {
                 contentType: 'image/jpeg',
                 upsert: true,
               });
-            
+
             if (uploadError) {
               console.error(`❌ Photo ${i} upload error:`, uploadError);
               // Hata olsa bile devam et, yerel URI'yi kullanma
               continue;
             }
-            
+
             const { data: { publicUrl } } = supabase.storage
               .from('photos')
               .getPublicUrl(fileName);
-            
+
             console.log(`✅ Photo ${i} uploaded:`, publicUrl.substring(0, 50));
             uploadedPhotos.push(publicUrl);
           } catch (err) {
@@ -484,14 +493,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const fileName = `${user.id}/avatar_${Date.now()}.jpg`;
           const response = await fetch(avatarUrl);
           const blob = await response.blob();
-          
+
           const { error: avatarError } = await supabase.storage
             .from('photos')
             .upload(fileName, blob, {
               contentType: 'image/jpeg',
               upsert: true,
             });
-          
+
           if (!avatarError) {
             const { data: { publicUrl } } = supabase.storage
               .from('photos')

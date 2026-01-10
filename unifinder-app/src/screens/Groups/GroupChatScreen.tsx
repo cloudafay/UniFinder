@@ -139,21 +139,21 @@ const GroupChatScreen: React.FC = () => {
         
         <TouchableOpacity 
           style={styles.headerContent}
-          onPress={() => navigation.navigate('GroupMembers', { groupId, groupName })}
+          onPress={() => navigation.navigate('GroupSettings', { groupId, groupName })}
         >
           <Text style={[styles.headerTitle, { color: colors.textPrimary }]} numberOfLines={1}>
             {groupName}
           </Text>
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-            Üyeleri görmek için dokun
+            Ayarlar için dokun
           </Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
           style={styles.menuButton}
-          onPress={() => navigation.navigate('GroupMembers', { groupId, groupName })}
+          onPress={() => navigation.navigate('GroupSettings', { groupId, groupName })}
         >
-          <MaterialIcons name="people" size={24} color={colors.textPrimary} />
+          <MaterialIcons name="settings" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
 

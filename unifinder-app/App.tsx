@@ -52,7 +52,6 @@ const linking: LinkingOptions<RootStackParamList> = {
         path: 'auth',
         screens: {
           Login: 'login',
-          Register: 'register',
         },
       },
       Main: {
@@ -92,17 +91,17 @@ const linking: LinkingOptions<RootStackParamList> = {
         routes: [{ name: 'Main' as const }],
       };
     }
-    
+
     // Varsayılan davranışı kullan
     const defaultState = defaultGetStateFromPath(path, config);
-    
+
     // Eğer state bulunamazsa Main'e yönlendir
     if (!defaultState) {
       return {
         routes: [{ name: 'Main' as const }],
       };
     }
-    
+
     return defaultState;
   },
 };
@@ -182,7 +181,7 @@ export default function App() {
     <ErrorBoundary>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
-          <NavigationContainer 
+          <NavigationContainer
             linking={linking}
             fallback={<LoadingScreen />}
           >

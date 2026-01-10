@@ -50,6 +50,7 @@ import GroupListScreen from '../screens/Groups/GroupListScreen';
 import GroupChatScreen from '../screens/Groups/GroupChatScreen';
 import CreateGroupScreen from '../screens/Groups/CreateGroupScreen';
 import GroupMembersScreen from '../screens/Groups/GroupMembersScreen';
+import GroupSettingsScreen from '../screens/Groups/GroupSettingsScreen';
 // Profile Enhancements
 import ProfilePreviewScreen from '../screens/Profile/ProfilePreviewScreen';
 import EditPromptsScreen from '../screens/Profile/EditPromptsScreen';
@@ -346,6 +347,11 @@ export const RootNavigator: React.FC<RootNavigatorProps> = ({ isAuthenticated })
           <Stack.Screen
             name="GroupMembers"
             component={GroupMembersScreen}
+            options={{ animation: 'slide_from_right' }}
+          />
+          <Stack.Screen
+            name="GroupSettings"
+            component={GroupSettingsScreen}
             options={{ animation: 'slide_from_right' }}
           />
           {/* Profile Enhancements */}
