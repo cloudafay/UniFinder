@@ -1,5 +1,5 @@
-// Message List Screen - Supabase Entegrasyonu
-import React, { useState, useEffect, useCallback } from 'react';
+// Message List Screen - Özel Mesajlar + Grup Sohbetleri Birleşik
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   TextInput,
-  Animated,
+  ScrollView,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,55 +23,77 @@ import { useAuth } from '../../context/AuthContext';
 import matchService from '../../services/matchService';
 import { chatService } from '../../services/chatService';
 import { groupChatService, GroupChat } from '../../services/groupChatService';
-import { notificationService } from '../../services/notificationService';
 
-// Konuşma tipi
+// Birleşik konuşma tipi
 type ConversationType = {
   id: string;
-  user: {
-    name: string;
-    photo: string;
-    department: string;
-  };
+  type: 'private' | 'group';
+  name: string;
+  photo: string;
   lastMessage: string;
   time: string;
+  timestamp: number; // Sıralama için
   unread: number;
   isOnline: boolean;
-  isNewMatch: boolean; // Henüz mesajlaşılmamış
+  isNewMatch: boolean;
+  memberCount?: number; // Grup için
 };
 
 interface ConversationItemProps {
   conversation: ConversationType;
   onPress: () => void;
+  colors: any;
 }
 
-const ConversationItem: React.FC<ConversationItemProps> = ({ conversation, onPress }) => (
-  <TouchableOpacity style={styles.conversationItem} onPress={onPress} activeOpacity={0.7}>
+const ConversationItem: React.FC<ConversationItemProps> = ({ conversation, onPress, colors }) => (
+  <TouchableOpacity 
+    style={[styles.conversationItem, { backgroundColor: colors.surface }]} 
+    onPress={onPress} 
+    activeOpacity={0.7}
+  >
     <View style={styles.avatarContainer}>
-      {conversation.user.photo ? (
-        <Image source={{ uri: conversation.user.photo }} style={styles.avatar} />
+      {conversation.type === 'group' ? (
+        conversation.photo ? (
+          <Image source={{ uri: conversation.photo }} style={styles.avatar} />
+        ) : (
+          <View style={[styles.groupAvatarPlaceholder, { backgroundColor: `${colors.primary}20` }]}>
+            <MaterialIcons name="group" size={24} color={colors.primary} />
+          </View>
+        )
       ) : (
-        <View style={[styles.avatar, { backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' }]}>
-          <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
-            {conversation.user.name?.charAt(0)?.toUpperCase() || 'U'}
-          </Text>
+        <Image source={{ uri: conversation.photo }} style={styles.avatar} />
+      )}
+      {conversation.type === 'private' && conversation.isOnline && (
+        <View style={styles.onlineIndicator} />
+      )}
+      {conversation.type === 'group' && (
+        <View style={[styles.groupBadge, { backgroundColor: colors.primary }]}>
+          <MaterialIcons name="group" size={10} color="#fff" />
         </View>
       )}
-      {conversation.isOnline && <View style={styles.onlineIndicator} />}
     </View>
     <View style={styles.conversationContent}>
       <View style={styles.conversationHeader}>
-        <Text style={styles.userName}>{conversation.user.name}</Text>
+        <View style={styles.nameContainer}>
+          <Text style={[styles.userName, { color: colors.textPrimary }]} numberOfLines={1}>
+            {conversation.name}
+          </Text>
+          {conversation.type === 'group' && conversation.memberCount && (
+            <Text style={[styles.memberCount, { color: colors.textTertiary }]}>
+              {conversation.memberCount} üye
+            </Text>
+          )}
+        </View>
         <Text style={[styles.timeText, conversation.unread > 0 && styles.timeTextUnread]}>
           {conversation.time}
         </Text>
       </View>
       <View style={styles.messageRow}>
         <Text
-          style={[styles.lastMessage, conversation.unread > 0 && styles.lastMessageUnread]}
+          style={[styles.lastMessage, { color: colors.textSecondary }, conversation.unread > 0 && styles.lastMessageUnread]}
           numberOfLines={1}
         >
-          {conversation.lastMessage}
+          {conversation.lastMessage || (conversation.type === 'group' ? 'Gruba katıldın' : 'Mesaj yok')}
         </Text>
         {conversation.unread > 0 && (
           <View style={styles.unreadBadge}>
@@ -91,20 +113,19 @@ const MessageListScreen: React.FC = () => {
   const { colors } = useTheme();
   const { user } = useAuth();
 
-  const [conversations, setConversations] = useState<ConversationType[]>([]);
-  const [groups, setGroups] = useState<GroupChat[]>([]);
+  const [privateConversations, setPrivateConversations] = useState<ConversationType[]>([]);
+  const [groupConversations, setGroupConversations] = useState<ConversationType[]>([]);
   const [newMatches, setNewMatches] = useState<ConversationType[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  const [activeTab, setActiveTab] = useState<'direct' | 'groups'>('direct');
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const [activeTab, setActiveTab] = useState<'all' | 'private' | 'groups'>('all');
 
   // Zaman formatla
   const formatTime = (dateString: string | null): string => {
     if (!dateString) return 'Yeni';
-
+    
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -120,95 +141,84 @@ const MessageListScreen: React.FC = () => {
     return date.toLocaleDateString('tr-TR');
   };
 
-  // Eşleşmeleri ve son mesajları yükle
-  const loadConversations = useCallback(async () => {
-    console.log('📬 loadConversations başladı');
-    if (!user) {
-      console.log('⚠️ User yok, loadConversations atlanıyor');
-      return;
-    }
+  // Tüm konuşmaları yükle (özel + grup)
+  const loadAllConversations = useCallback(async () => {
+    if (!user) return;
 
     try {
-      console.log('📬 Eşleşmeler ve gruplar yükleniyor - userId:', user.id);
-      // Tüm eşleşmeleri al
-      const { data: matches, error } = await matchService.getMyMatches(user.id);
+      const privateList: ConversationType[] = [];
+      const groupList: ConversationType[] = [];
+      const newMatchesList: ConversationType[] = [];
 
-      if (error) {
-        console.error('Eşleşmeler yüklenemedi:', error);
-        // Hata olsa bile grupları yüklemeye devam et
-      }
+      // 1. Özel mesajları yükle
+      const { data: matches, error: matchError } = await matchService.getMyMatches(user.id);
+      
+      if (!matchError && matches && matches.length > 0) {
+        const privateConvs = await Promise.all(
+          matches.map(async (match: any) => {
+            const { data: messages } = await chatService.getMessages(match.id, 1, 0);
+            const lastMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+            const { count: unreadCount } = await chatService.getUnreadCount(match.id, user.id);
 
-      // Eşleşmeler yoksa bile grupları yükle - ERKEN RETURN YAPMA!
-      if (!matches || matches.length === 0) {
-        console.log('📬 Eşleşme yok, ama grupları yüklemeye devam ediyorum');
-        setConversations([]);
-        setNewMatches([]);
-        // GRUPLAR İÇİN DEVAM ET - return YAPMA!
-      } else {
-        // Her eşleşme için son mesajı ve okunmamış sayısını al
-        const conversationPromises = matches.map(async (match: any) => {
-          // Son mesajı al
-          const { data: messages } = await chatService.getMessages(match.id, 1, 0);
-          const lastMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+            const otherUser = match.otherUser;
+            const photoUrl = otherUser?.photos?.[0] || otherUser?.avatar_url || 'https://via.placeholder.com/100';
+            const lastMessageTime = lastMessage?.created_at || match.created_at;
 
-          // Okunmamış mesaj sayısını al
-          const { count: unreadCount } = await chatService.getUnreadCount(match.id, user.id);
-
-          const otherUser = match.otherUser;
-          // Supabase URL'leri veya geçerli http/https URL'lerini kullan, geçersiz URL'leri filtrele
-          const rawPhoto = otherUser?.photos?.[0] || otherUser?.avatar_url;
-          const photoUrl = rawPhoto && (rawPhoto.startsWith('http://') || rawPhoto.startsWith('https://')) ? rawPhoto : undefined;
-
-          return {
-            id: match.id,
-            user: {
-              name: otherUser?.display_name || 'Kullanıcı',
+            return {
+              id: match.id,
+              type: 'private' as const,
+              name: otherUser?.display_name || otherUser?.full_name || 'Kullanıcı',
               photo: photoUrl,
-              department: otherUser?.department || '',
-            },
-            lastMessage: lastMessage?.content || '',
-            time: formatTime(lastMessage?.created_at || match.created_at),
-            unread: unreadCount || 0,
-            isOnline: false, // TODO: Online durumu için realtime gerekli
-            isNewMatch: !lastMessage, // Mesaj yoksa yeni eşleşme
-          } as ConversationType;
+              lastMessage: lastMessage?.content || '',
+              time: formatTime(lastMessageTime),
+              timestamp: new Date(lastMessageTime).getTime(),
+              unread: unreadCount || 0,
+              isOnline: false,
+              isNewMatch: !lastMessage,
+            };
+          })
+        );
+
+        // Yeni eşleşmeleri ayır
+        privateConvs.forEach(conv => {
+          if (conv.isNewMatch) {
+            newMatchesList.push(conv);
+          } else {
+            privateList.push(conv);
+          }
         });
-
-        const allConversations = await Promise.all(conversationPromises);
-
-        // Yeni eşleşmeleri ayır (henüz mesajlaşılmamış)
-        const newOnes = allConversations.filter(c => c.isNewMatch);
-        const withMessages = allConversations.filter(c => !c.isNewMatch);
-
-        setNewMatches(newOnes);
-        setConversations(withMessages);
       }
 
-      // Grupları getir
-      console.log('🔵 Grupları yüklemeye başlıyorum - userId:', user.id);
-      const { data: myGroups, error: groupsError } = await groupChatService.getMyGroups(user.id);
-      console.log('🔵 getMyGroups sonucu:', { myGroups, groupsError, count: myGroups?.length });
+      // 2. Grup sohbetlerini yükle
+      console.log('Loading groups for user:', user.id);
+      const { data: groups, error: groupError } = await groupChatService.getMyGroups(user.id);
+      console.log('Groups loaded:', groups, 'Error:', groupError);
+      
+      if (!groupError && groups && groups.length > 0) {
+        const groupConvs = groups.map((group: GroupChat) => ({
+          id: group.id,
+          type: 'group' as const,
+          name: group.name,
+          photo: group.avatar_url || '',
+          lastMessage: group.description || 'Gruba katıldın',
+          time: formatTime(group.last_message_at || group.created_at),
+          timestamp: new Date(group.last_message_at || group.created_at || Date.now()).getTime(),
+          unread: 0,
+          isOnline: false,
+          isNewMatch: false,
+          memberCount: group.member_count,
+        }));
 
-      if (groupsError) {
-        console.error('❌ Grup yükleme hatası:', groupsError);
+        groupList.push(...groupConvs);
       }
 
-      if (myGroups && myGroups.length > 0) {
-        console.log('🔵 Gruplar bulundu, detayları yükleniyor...');
-        const groupPromises = myGroups.map(async (group) => {
-          // Grubun son mesajını al
-          const { data: messages } = await groupChatService.getMessages(group.id, 1);
-          const lastMessage = messages && messages.length > 0 ? messages[0] : undefined;
+      // Sırala
+      privateList.sort((a, b) => b.timestamp - a.timestamp);
+      groupList.sort((a, b) => b.timestamp - a.timestamp);
 
-          return {
-            ...group,
-            lastMessage
-          };
-        });
-
-        const groupsWithMessages = await Promise.all(groupPromises);
-        setGroups(groupsWithMessages);
-      }
+      setPrivateConversations(privateList);
+      setGroupConversations(groupList);
+      setNewMatches(newMatchesList);
 
     } catch (err) {
       console.error('Konuşmalar yüklenirken hata:', err);
@@ -222,39 +232,54 @@ const MessageListScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      loadConversations();
-      
-      // Okunmamış bildirim sayısını yükle
-      const loadUnreadCount = async () => {
-        if (user?.id) {
-          const { count } = await notificationService.getUnreadCount(user.id);
-          setUnreadNotificationCount(count || 0);
-        }
-      };
-      loadUnreadCount();
-    }, [loadConversations])
+      loadAllConversations();
+    }, [loadAllConversations])
   );
 
   // Pull-to-refresh
   const onRefresh = () => {
     setRefreshing(true);
-    loadConversations();
+    loadAllConversations();
   };
 
   const handleConversationPress = (conversation: ConversationType) => {
-    navigation.navigate('Chat', {
-      matchId: conversation.id,
-      userName: conversation.user.name,
-      userPhoto: conversation.user.photo,
-    });
+    if (conversation.type === 'group') {
+      navigation.navigate('GroupChat', {
+        groupId: conversation.id,
+        groupName: conversation.name,
+      });
+    } else {
+      navigation.navigate('Chat', {
+        matchId: conversation.id,
+        userName: conversation.name,
+        userPhoto: conversation.photo,
+      });
+    }
   };
 
-  const handleGroupPress = (group: GroupChat) => {
-    navigation.navigate('GroupChat', {
-      groupId: group.id,
-      groupName: group.name,
-    });
+  // Filtrelenmiş konuşmalar
+  const getFilteredConversations = () => {
+    let list: ConversationType[] = [];
+    
+    if (activeTab === 'all') {
+      list = [...privateConversations, ...groupConversations].sort((a, b) => b.timestamp - a.timestamp);
+    } else if (activeTab === 'private') {
+      list = privateConversations;
+    } else {
+      list = groupConversations;
+    }
+
+    if (searchQuery) {
+      list = list.filter(c =>
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    return list;
   };
+
+  const filteredConversations = getFilteredConversations();
 
   // Loading state
   if (loading) {
@@ -266,84 +291,7 @@ const MessageListScreen: React.FC = () => {
     );
   }
 
-  // Boş state - hiç eşleşme ve grup yok
-  if (conversations.length === 0 && newMatches.length === 0 && groups.length === 0) {
-    return (
-      <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.background }]}>
-        <View style={styles.backgroundBlobs}>
-          <View style={[styles.blob, styles.blobTop]} />
-          <View style={[styles.blob, styles.blobBottom]} />
-        </View>
-        <View style={styles.header}>
-          <View>
-            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Mesajlar</Text>
-          </View>
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={[styles.headerButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              onPress={() => setShowSearch(true)}
-            >
-              <MaterialIcons name="search" size={24} color={colors.textSecondary} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.headerButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              onPress={() => navigation.navigate('NotificationCenter')}
-            >
-              <MaterialIcons name="notifications-none" size={24} color={colors.textSecondary} />
-              {unreadNotificationCount > 0 && (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationBadgeText}>
-                    {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-        
-        {/* Tabs - Boş durumda da göster */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[styles.tabButton, activeTab === 'direct' && styles.activeTabButton, { borderBottomColor: activeTab === 'direct' ? Colors.primary : 'transparent' }]}
-            onPress={() => setActiveTab('direct')}
-          >
-            <Text style={[styles.tabText, activeTab === 'direct' ? { color: Colors.primary, fontWeight: '600' } : { color: colors.textSecondary }]}>Mesajlar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tabButton, activeTab === 'groups' && styles.activeTabButton, { borderBottomColor: activeTab === 'groups' ? Colors.primary : 'transparent' }]}
-            onPress={() => setActiveTab('groups')}
-          >
-            <Text style={[styles.tabText, activeTab === 'groups' ? { color: Colors.primary, fontWeight: '600' } : { color: colors.textSecondary }]}>Gruplar</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {activeTab === 'direct' ? (
-          <View style={styles.emptyContainer}>
-            <MaterialIcons name="chat-bubble-outline" size={80} color={colors.textSecondary} />
-            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Henüz eşleşme yok</Text>
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              Keşfet sayfasından swipe yaparak eşleşme bulabilirsin!
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.emptyContainer}>
-            <MaterialIcons name="group" size={80} color={colors.textSecondary} />
-            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Henüz grup yok</Text>
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              Etkinlikler veya kampüs gruplarına katılabilirsin!
-            </Text>
-            <TouchableOpacity
-              style={[styles.createGroupButton, { backgroundColor: Colors.primary }]}
-              onPress={() => navigation.navigate('CreateGroup' as never)}
-            >
-              <MaterialIcons name="add" size={20} color="#fff" />
-              <Text style={styles.createGroupButtonText}>Grup Oluştur</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    );
-  }
+
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.background }]}>
@@ -356,11 +304,11 @@ const MessageListScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         {showSearch ? (
-          <View style={styles.searchContainer}>
+          <View style={[styles.searchContainer, { backgroundColor: colors.surface }]}>
             <MaterialIcons name="search" size={20} color={colors.textSecondary} />
             <TextInput
               style={[styles.searchInput, { color: colors.textPrimary }]}
-              placeholder="Konuşmalarda ara..."
+              placeholder="Mesajlarda ara..."
               placeholderTextColor={colors.textSecondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -372,9 +320,7 @@ const MessageListScreen: React.FC = () => {
           </View>
         ) : (
           <>
-            <View>
-              <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Sohbetler</Text>
-            </View>
+            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Mesajlar</Text>
             <View style={styles.headerActions}>
               <TouchableOpacity
                 style={[styles.headerButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
@@ -384,195 +330,152 @@ const MessageListScreen: React.FC = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.headerButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={() => navigation.navigate('CreateGroup' as never)}
+              >
+                <MaterialIcons name="group-add" size={24} color={colors.textSecondary} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.headerButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 onPress={() => navigation.navigate('NotificationCenter')}
               >
                 <MaterialIcons name="notifications-none" size={24} color={colors.textSecondary} />
-                {unreadNotificationCount > 0 && (
-                  <View style={styles.notificationBadge}>
-                    <Text style={styles.notificationBadgeText}>
-                      {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
-                    </Text>
-                  </View>
-                )}
               </TouchableOpacity>
             </View>
           </>
         )}
       </View>
 
-      {/* Tabs */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'direct' && styles.activeTabButton, { borderBottomColor: activeTab === 'direct' ? Colors.primary : 'transparent' }]}
-          onPress={() => setActiveTab('direct')}
-        >
-          <Text style={[styles.tabText, activeTab === 'direct' ? { color: Colors.primary, fontWeight: '600' } : { color: colors.textSecondary }]}>Mesajlar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'groups' && styles.activeTabButton, { borderBottomColor: activeTab === 'groups' ? Colors.primary : 'transparent' }]}
-          onPress={() => setActiveTab('groups')}
-        >
-          <Text style={[styles.tabText, activeTab === 'groups' ? { color: Colors.primary, fontWeight: '600' } : { color: colors.textSecondary }]}>Gruplar</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Conversations List */}
-
-      {activeTab === 'direct' ? (
-        <View style={styles.conversationsContainer}>
-          {/* New Matches Section - Only in Direct currently */}
-          {newMatches.length > 0 && (
-            <View style={styles.matchesSection}>
-              <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Yeni Eşleşmeler</Text>
-              <FlatList
-                horizontal
-                data={newMatches}
-                keyExtractor={(item) => item.id}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.matchesList}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.matchItem}
-                    onPress={() => handleConversationPress(item)}
-                  >
-                    <View style={styles.matchAvatarContainer}>
-                      {item.user.photo ? (
-                        <Image source={{ uri: item.user.photo }} style={styles.matchAvatar} />
-                      ) : (
-                        <View style={[styles.matchAvatar, { backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' }]}>
-                          <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
-                            {item.user.name?.charAt(0)?.toUpperCase() || 'U'}
-                          </Text>
-                        </View>
-                      )}
-                      {item.isOnline && <View style={styles.matchOnlineIndicator} />}
-                    </View>
-                    <Text style={[styles.matchName, { color: colors.textPrimary }]} numberOfLines={1}>
-                      {item.user.name.split(' ')[0]}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          )}
-
-          <Text style={styles.sectionTitle}>Konuşmalar</Text>
-          {conversations.length === 0 ? (
-            <View style={styles.noConversations}>
-              <Text style={[styles.noConversationsText, { color: colors.textSecondary }]}>
-                Henüz bir konuşma başlatmadın. Yeni eşleşmelerinle mesajlaşmaya başla!
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              data={conversations.filter(c =>
-                searchQuery === '' ||
-                c.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                c.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
-              )}
-              keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.conversationsList}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />
-              }
-              renderItem={({ item }) => (
-                <ConversationItem
-                  conversation={item}
-                  onPress={() => handleConversationPress(item)}
-                />
-              )}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-              ListEmptyComponent={
-                searchQuery !== '' ? (
-                  <View style={styles.noConversations}>
-                    <Text style={[styles.noConversationsText, { color: colors.textSecondary }]}>
-                      "{searchQuery}" için sonuç bulunamadı
-                    </Text>
-                  </View>
-                ) : null
-              }
-            />
-          )}
-        </View>
-      ) : (
-        <View style={styles.conversationsContainer}>
-          <Text style={styles.sectionTitle}>Grup Sohbetleri</Text>
-          {groups.length === 0 ? (
-            <View style={styles.noConversations}>
-              <Text style={[styles.noConversationsText, { color: colors.textSecondary }]}>
-                Henüz bir gruba üye değilsin.
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              data={groups.filter(g =>
-                searchQuery === '' ||
-                g.name.toLowerCase().includes(searchQuery.toLowerCase())
-              )}
-              keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.conversationsList}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />
-              }
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.conversationItem}
-                  onPress={() => handleGroupPress(item)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.avatarContainer}>
-                    {item.avatar_url && (item.avatar_url.startsWith('http://') || item.avatar_url.startsWith('https://')) ? (
-                      <Image
-                        source={{ uri: item.avatar_url }}
-                        style={[styles.avatar, { borderRadius: 16 }]}
-                      />
-                    ) : (
-                      <View style={[styles.avatar, { borderRadius: 16, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' }]}>
-                        <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
-                          {item.name?.charAt(0)?.toUpperCase() || 'G'}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.conversationContent}>
-                    <View style={styles.conversationHeader}>
-                      <Text style={styles.userName}>{item.name}</Text>
-                      <Text style={styles.timeText}>
-                        {formatTime(item.last_message_at || item.created_at)}
-                      </Text>
-                    </View>
-                    <View style={styles.messageRow}>
-                      <Text
-                        style={styles.lastMessage}
-                        numberOfLines={1}
-                      >
-                        {item.lastMessage
-                          ? `${item.lastMessage.sender?.full_name?.split(' ')[0] || 'Üye'}: ${item.lastMessage.message_type === 'image' ? '📷 Fotoğraf' :
-                            item.lastMessage.message_type === 'gif' ? '👾 GIF' :
-                              item.lastMessage.content
-                          }`
-                          : 'Henüz mesaj yok'}
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-              ListEmptyComponent={
-                searchQuery !== '' ? (
-                  <View style={styles.noConversations}>
-                    <Text style={[styles.noConversationsText, { color: colors.textSecondary }]}>
-                      "{searchQuery}" için sonuç bulunamadı
-                    </Text>
-                  </View>
-                ) : null
-              }
-            />
-          )}
+      {/* New Matches Section */}
+      {newMatches.length > 0 && !showSearch && (
+        <View style={styles.matchesSection}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>YENİ EŞLEŞMELER</Text>
+          <FlatList
+            horizontal
+            data={newMatches}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.matchesList}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.matchItem}
+                onPress={() => handleConversationPress(item)}
+              >
+                <View style={styles.matchAvatarContainer}>
+                  <Image source={{ uri: item.photo }} style={styles.matchAvatar} />
+                  {item.isOnline && <View style={styles.matchOnlineIndicator} />}
+                </View>
+                <Text style={[styles.matchName, { color: colors.textPrimary }]} numberOfLines={1}>
+                  {item.name.split(' ')[0]}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
         </View>
       )}
+
+      {/* Tab Selector - HER ZAMAN GÖRÜNSÜN */}
+      {!showSearch && (
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[
+              styles.tab,
+              activeTab === 'all' && styles.tabActive,
+              { borderColor: activeTab === 'all' ? Colors.primary : colors.border }
+            ]}
+            onPress={() => setActiveTab('all')}
+          >
+            <Text style={[
+              styles.tabText,
+              { color: activeTab === 'all' ? Colors.primary : colors.textSecondary }
+            ]}>
+              Tümü
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.tab,
+              activeTab === 'private' && styles.tabActive,
+              { borderColor: activeTab === 'private' ? Colors.primary : colors.border }
+            ]}
+            onPress={() => setActiveTab('private')}
+          >
+            <MaterialIcons 
+              name="person" 
+              size={16} 
+              color={activeTab === 'private' ? Colors.primary : colors.textSecondary} 
+            />
+            <Text style={[
+              styles.tabText,
+              { color: activeTab === 'private' ? Colors.primary : colors.textSecondary }
+            ]}>
+              Özel
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.tab,
+              activeTab === 'groups' && styles.tabActive,
+              { borderColor: activeTab === 'groups' ? Colors.primary : colors.border }
+            ]}
+            onPress={() => setActiveTab('groups')}
+          >
+            <MaterialIcons 
+              name="group" 
+              size={16} 
+              color={activeTab === 'groups' ? Colors.primary : colors.textSecondary} 
+            />
+            <Text style={[
+              styles.tabText,
+              { color: activeTab === 'groups' ? Colors.primary : colors.textSecondary }
+            ]}>
+              Gruplar
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* All Conversations List */}
+      <View style={styles.conversationsContainer}>
+        <FlatList
+          data={filteredConversations}
+          keyExtractor={(item) => `${item.type}-${item.id}`}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.conversationsList}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />
+          }
+          renderItem={({ item }) => (
+            <ConversationItem
+              conversation={item}
+              onPress={() => handleConversationPress(item)}
+              colors={colors}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <MaterialIcons name="chat-bubble-outline" size={60} color={colors.textSecondary} />
+              <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+                {activeTab === 'groups' ? 'Henüz grup yok' : activeTab === 'private' ? 'Henüz mesaj yok' : 'Henüz konuşma yok'}
+              </Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                {activeTab === 'groups' 
+                  ? 'Yeni bir grup oluşturabilirsin!' 
+                  : 'Keşfet sayfasından eşleşme bul!'}
+              </Text>
+              {activeTab !== 'private' && (
+                <TouchableOpacity
+                  style={[styles.createGroupButton, { backgroundColor: Colors.primary }]}
+                  onPress={() => navigation.navigate('CreateGroup' as never)}
+                >
+                  <MaterialIcons name="group-add" size={20} color="#fff" />
+                  <Text style={styles.createGroupButtonText}>Grup Oluştur</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -580,7 +483,6 @@ const MessageListScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.backgroundLight,
   },
   backgroundBlobs: {
     ...StyleSheet.absoluteFillObject,
@@ -608,35 +510,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 16,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1e293b',
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
   },
   headerButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
-    position: 'relative',
   },
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     borderRadius: 22,
     paddingHorizontal: 16,
     height: 44,
@@ -647,51 +544,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     height: '100%',
   },
-  notificationBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: '#ef4444',
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-  notificationBadgeText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
   matchesSection: {
     paddingTop: 8,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#64748b',
-    paddingHorizontal: 24,
+    fontSize: 12,
+    fontWeight: '700',
+    paddingHorizontal: 20,
     marginBottom: 12,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
   matchesList: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
   },
   matchItem: {
     alignItems: 'center',
-    marginHorizontal: 8,
-    width: 70,
+    marginHorizontal: 6,
+    width: 68,
   },
   matchAvatarContainer: {
     position: 'relative',
   },
   matchAvatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     borderWidth: 2,
     borderColor: Colors.primary,
   },
@@ -709,13 +586,12 @@ const styles = StyleSheet.create({
   matchName: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#475569',
     marginTop: 6,
     textAlign: 'center',
   },
   conversationsContainer: {
     flex: 1,
-    marginTop: 24,
+    marginTop: 16,
   },
   conversationsList: {
     paddingHorizontal: 16,
@@ -725,16 +601,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
     borderRadius: 16,
   },
   avatarContainer: {
     position: 'relative',
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+  },
+  groupAvatarPlaceholder: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   onlineIndicator: {
     position: 'absolute',
@@ -747,6 +629,18 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#fff',
   },
+  groupBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
   conversationContent: {
     flex: 1,
     marginLeft: 12,
@@ -756,10 +650,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  nameContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   userName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1e293b',
+    flexShrink: 1,
+  },
+  memberCount: {
+    fontSize: 12,
   },
   timeText: {
     fontSize: 12,
@@ -777,10 +680,8 @@ const styles = StyleSheet.create({
   lastMessage: {
     flex: 1,
     fontSize: 14,
-    color: '#64748b',
   },
   lastMessageUnread: {
-    color: '#1e293b',
     fontWeight: '500',
   },
   unreadBadge: {
@@ -794,7 +695,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   unreadText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -808,7 +709,6 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#64748b',
   },
   emptyContainer: {
     flex: 1,
@@ -819,24 +719,22 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1e293b',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyText: {
     fontSize: 14,
-    color: '#64748b',
     textAlign: 'center',
     lineHeight: 20,
   },
   createGroupButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 25,
-    marginTop: 20,
     gap: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 25,
+    marginTop: 24,
   },
   createGroupButtonText: {
     color: '#fff',
@@ -849,30 +747,30 @@ const styles = StyleSheet.create({
   },
   noConversationsText: {
     fontSize: 14,
-    color: '#64748b',
     textAlign: 'center',
     lineHeight: 20,
   },
   tabContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 24,
-    marginBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
   },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 12,
+  tab: {
+    flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+    gap: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
   },
-  activeTabButton: {
-    // borderBottomColor set dynamically
+  tabActive: {
+    backgroundColor: `${Colors.primary}15`,
   },
   tabText: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
 

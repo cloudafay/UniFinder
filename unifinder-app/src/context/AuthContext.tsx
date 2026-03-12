@@ -1,11 +1,10 @@
 // Auth Context - Supabase Entegrasyonu
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Platform } from 'react-native';
-import { decode } from 'base64-arraybuffer';
 import { supabase } from '../lib/supabase';
 import { Session } from '@supabase/supabase-js';
 
-// Legacy FileSystem for base64 reading
+// FileSystem for photo uploads on mobile
 let FileSystem: any = null;
 if (Platform.OS !== 'web') {
   FileSystem = require('expo-file-system');
@@ -16,7 +15,8 @@ interface User {
   email: string;
   fullName: string;
   department: string;
-  year: string;
+  year: string; // Deprecated - use classYear
+  classYear?: 'freshman' | 'sophomore' | 'junior' | 'senior'; // New field
   photos: string[];
   interests: string[];
   isVerified: boolean;
@@ -242,15 +242,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
                     // Platform'a göre farklı yükleme yöntemi
                     if (Platform.OS !== 'web') {
-                      // Mobile: FileSystem ile base64 oku (new API)
-                      console.log('📱 Mobile upload: Reading file as base64...');
+                      // Mobile: Use fetch to get blob, then convert to ArrayBuffer
+                      console.log('📱 Mobile upload: Reading file with fetch...');
 
-                      const base64 = await FileSystem.readAsStringAsync(photoUri, {
-                        encoding: FileSystem.EncodingType?.Base64 || 'base64',
-                      });
-                      console.log('📝 Base64 length:', base64?.length);
-                      uploadData = decode(base64);
-                      console.log('✅ ArrayBuffer created, size:', uploadData.byteLength);
+                      const response = await fetch(photoUri);
+                      const blob = await response.blob();
+                      console.log('✅ Blob created, size:', blob.size);
+                      uploadData = blob;
                     } else {
                       // Web: fetch ile blob al
                       const response = await fetch(photoUri);
@@ -326,18 +324,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
                   let uploadResult;
 
-                  // Mobile için FileSystem kullan (new API)
+                  // Mobile için fetch kullan (mobile'da da fetch çalışır)
                   if (Platform.OS !== 'web') {
-                    console.log('📱 Mobile photo upload with FileSystem...');
+                    console.log('📱 Mobile photo upload with fetch...');
 
-                    const base64Data = await FileSystem.readAsStringAsync(photoUri, {
-                      encoding: FileSystem.EncodingType?.Base64 || 'base64',
-                    });
-                    console.log('📝 Base64 data length:', base64Data?.length);
+                    const response = await fetch(photoUri);
+                    const blob = await response.blob();
+                    console.log('✅ Blob created, size:', blob.size);
 
                     uploadResult = await supabase.storage
                       .from('photos')
-                      .upload(fileName, decode(base64Data), {
+                      .upload(fileName, blob, {
                         contentType: 'image/jpeg',
                         upsert: true,
                       });

@@ -8,7 +8,7 @@ import SplashScreen from '../screens/Auth/SplashScreen';
 import LoginScreen from '../screens/Auth/LoginScreen';
 import RegisterBasicInfoScreen from '../screens/Auth/RegisterBasicInfoScreen';
 import RegisterPhotoScreen from '../screens/Auth/RegisterPhotoScreen';
-import RegisterInterestScreen from '../screens/Auth/RegisterInterestScreen';
+import RegisterInterestScreen from '../screens/Auth/RegisterInterestsScreen';
 import EmailVerificationScreen from '../screens/Auth/EmailVerificationScreen';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();

@@ -30,6 +30,14 @@ const availableInterests = [
   'Dans', 'Oyun', 'Spor', 'Sanat', 'Podcast'
 ];
 
+// Class year options - same as registration
+const CLASS_YEAR_OPTIONS = [
+  { value: 'freshman' as const, label: '1. Sınıf' },
+  { value: 'sophomore' as const, label: '2. Sınıf' },
+  { value: 'junior' as const, label: '3. Sınıf' },
+  { value: 'senior' as const, label: '4. Sınıf' },
+];
+
 const EditProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -40,7 +48,7 @@ const EditProfileScreen: React.FC = () => {
   const [fullName, setFullName] = useState(user?.fullName || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [department, setDepartment] = useState(user?.department || '');
-  const [year, setYear] = useState(user?.year || '');
+  const [classYear, setClassYear] = useState(user?.classYear || 'freshman');
   const [selectedInterests, setSelectedInterests] = useState<string[]>(
     user?.interests || []
   );
@@ -134,7 +142,7 @@ const EditProfileScreen: React.FC = () => {
         fullName: fullName.trim(),
         bio: bio.trim(),
         department: department.trim(),
-        year: year.trim(),
+        classYear: classYear,
         interests: selectedInterests,
         photos: photos, // Vitrin fotoğrafları
         avatarUrl: avatarUrl || undefined, // Profil fotoğrafı (ayrı)
@@ -302,16 +310,35 @@ const EditProfileScreen: React.FC = () => {
             </View>
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-            {/* Year */}
+            {/* Class Year */}
             <View style={styles.inputGroup}>
               <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Sınıf</Text>
-              <TextInput
-                style={[styles.input, { color: colors.textPrimary }]}
-                value={year}
-                onChangeText={setYear}
-                placeholder="Sınıfınızı girin"
-                placeholderTextColor={colors.textTertiary}
-              />
+              <View style={styles.classYearPicker}>
+                {CLASS_YEAR_OPTIONS.map((option) => (
+                  <TouchableOpacity
+                    key={option.value}
+                    style={[
+                      styles.classYearOption,
+                      { borderColor: colors.border },
+                      classYear === option.value && styles.classYearOptionSelected,
+                    ]}
+                    onPress={() => setClassYear(option.value)}
+                  >
+                    <Text
+                      style={[
+                        styles.classYearText,
+                        { color: colors.textSecondary },
+                        classYear === option.value && styles.classYearTextSelected,
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
+                    {classYear === option.value && (
+                      <MaterialIcons name="check-circle" size={18} color={Colors.primary} />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
           </View>
         </View>
@@ -654,6 +681,36 @@ const styles = StyleSheet.create({
   },
   interestTextSelected: {
     color: '#fff',
+  },
+  classYearPicker: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 4,
+  },
+  classYearOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    flex: 1,
+    minWidth: '47%',
+  },
+  classYearOptionSelected: {
+    backgroundColor: `${Colors.primary}20`,
+    borderColor: Colors.primary,
+  },
+  classYearText: {
+    fontSize: 14,
+    fontWeight: '500',
+    flex: 1,
+  },
+  classYearTextSelected: {
+    color: Colors.primary,
+    fontWeight: '600',
   },
 });
 

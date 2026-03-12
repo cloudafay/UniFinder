@@ -6,7 +6,8 @@ export interface User {
   email: string;
   fullName: string;
   department: string;
-  year: 'freshman' | 'sophomore' | 'junior' | 'senior' | 'grad';
+  year: 'freshman' | 'sophomore' | 'junior' | 'senior' | 'grad'; // Deprecated - use classYear
+  classYear?: 'freshman' | 'sophomore' | 'junior' | 'senior'; // New field
   bio: string;
   photos: string[];
   interests: string[];
